@@ -23,12 +23,14 @@ mongoose.connect(
   const cartRou = require("./routers/cartRouter");
   const productBrandRou = require("./routers/productBrandRouter")
   const productTypeRou = require("./routers/productTypeRouter");
+  const commentRou = require("./routers/commentRouter");
   
   app.use('/api/user', userRou);
   app.use('/api/product', productRou);
   app.use('/api/cart', cartRou);
   app.use('/api/brand', productBrandRou);
   app.use('/api/type', productTypeRou);
+  app.use('/api/comment', commentRou);
 
 app.listen(port, () => {
   console.log('Sever running on port 8000 ');
