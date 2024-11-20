@@ -1,0 +1,12 @@
+[
+    {
+        "_id": "cart_0",
+        "productID": "6725c32326ab5a55135c319f",
+        "quantity": 1
+    },
+    {
+        "_id": "cart_1",
+        "productID": "6725c35d26ab5a55135c31a3",
+        "quantity": 4
+    }
+]
