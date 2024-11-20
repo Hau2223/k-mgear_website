@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import product from "../../utils/product.json";
-import cart from "../../utils/cart.json";
+import { FaStar } from 'react-icons/fa';
 
 export function ProductDetailPage() {
     return <ProductDetailPageBody />;
@@ -9,16 +9,16 @@ export function ProductDetailPage() {
 
 export function ProductDetailPageBody() {
     const { id } = useParams();
-    const [productData, setProductData] = useState(null);
+    const [productData, setProductData] = useState(null);  // Default to null
 
     useEffect(() => {
         const productDetails = product.find((item) => item._id === id);
         setProductData(productDetails);
-    }, []);
+    }, [id]);
 
     const handleBuyNow = (product) => {
-        alert('Buying product: ' + product);
-        console.log('Buying product:', product);
+        alert("Buying product: " + product);
+        console.log("Buying product:", product);
     };
 
     const handleAddToCart = (productID) => {
@@ -42,151 +42,82 @@ export function ProductDetailPageBody() {
         const updatedCarts = [...existingCarts, newCartItem];
         localStorage.setItem("carts", JSON.stringify(updatedCarts));
 
-        alert('Item added to cart!');
+        alert("Item added to cart!");
     };
 
-    const styles = {
-        product: {
-            display: 'flex',
-            padding: '20px',
-            maxWidth: '1200px',
-            margin: '40px auto',
-            border: '1px solid #eee',
-            borderRadius: '10px',
-            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-            backgroundColor: '#fff',
-            fontFamily: "'Arial', sans-serif",
-        },
-        productImage: {
-            flex: 1,
-            marginRight: '30px',
-            borderRadius: '10px',
-            overflow: 'hidden',
-        },
-        image: {
-            width: '100%',
-            height: 'auto',
-            transition: 'transform 0.3s',
-        },
-        imageHover: {
-            transform: 'scale(1.05)',
-        },
-        productDetails: {
-            flex: 2,
-        },
-        title: {
-            fontSize: '28px',
-            marginBottom: '15px',
-            color: '#333',
-        },
-        flashSale: {
-            backgroundColor: '#ff4500',
-            color: '#fff',
-            padding: '5px 15px',
-            borderRadius: '5px',
-            display: 'inline-block',
-            marginBottom: '15px',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-        },
-        price: {
-            fontSize: '24px',
-            margin: '10px 0',
-            display: 'flex',
-            alignItems: 'center',
-        },
-        originalPrice: {
-            textDecoration: 'line-through',
-            color: '#999',
-            fontSize: '20px',
-        },
-        discount: {
-            color: '#ff4500',
-            marginLeft: '10px',
-            fontSize: '18px',
-        },
-        currentPrice: {
-            color: '#ff4500',
-            fontWeight: 'bold',
-            fontSize: '24px',
-            marginLeft: '15px',
-        },
-        productInfo: {
-            margin: '15px 0',
-            color: '#555',
-        },
-        infoText: {
-            margin: '5px 0',
-        },
-        ctaButtons: {
-            marginTop: '20px',
-        },
-        button: {
-            padding: '12px 25px',
-            fontSize: '16px',
-            marginRight: '15px',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            transition: 'background-color 0.3s',
-        },
-        buyNow: {
-            backgroundColor: '#28a745',
-            color: 'white',
-        },
-        addToCart: {
-            backgroundColor: '#007bff',
-            color: 'white',
-        },
-        buttonHover: {
-            opacity: 0.9,
-        },
+    const formatPrice = (price) => {
+        return price?.toLocaleString('vi-VN') + ' VNĐ'; 
     };
+
+    // Wait until the productData is loaded before rendering the component
+    if (!productData) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <div style={styles.product}>
-            <div style={styles.productImage}>
-                <img
-                    src={productData?.imageUrl || '/path/to/fallback-image.jpg'}
-                    alt={productData?.name}
-                    style={styles.image}
-                    onMouseOver={(e) => e.target.style.transform = styles.imageHover.transform}
-                    onMouseOut={(e) => e.target.style.transform = ''}
-                />
+        <div className="flex flex-col md:flex-row items-center p-6 max-w-5xl mx-auto my-10 border rounded-lg shadow-lg bg-white">
+            {/* Product Image */}
+            <div className="flex-[5] flex justify-center items-center mb-6 md:mb-0 md:mr-8">
+                <div className="w-full h-72 overflow-hidden rounded-lg">
+                    <img
+                        src={productData?.imageUrl || "/path/to/fallback-image.jpg"}
+                        alt={productData?.name}
+                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                    />
+                </div>
             </div>
-            <div style={styles.productDetails}>
-                <h1 style={styles.title}>{productData?.name}</h1>
-                <div style={styles.flashSale}>FLASH SALE</div>
-                <div style={styles.price}>
-                    <span style={styles.originalPrice}>{productData?.price} VND</span>
-                    <span style={styles.discount}>-{productData?.discount}%</span>
-                    <span style={styles.currentPrice}>
-                        {(
-                            productData?.price - (productData?.discount / 100) * productData?.price
-                        ).toFixed(2)} VND
+
+            {/* Product Details */}
+            <div className="flex-[6] px-4">
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">{productData?.name}</h1>
+
+                {/* Flash Sale Badge */}
+                <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 inline-block text-sm uppercase font-bold rounded-full mb-4 shadow-lg">
+                    Flash Sale
+                </div>
+
+                <div className="flex items-center mb-6">
+                    <span className="text-gray-500 line-through text-lg mr-4">
+                        {formatPrice(productData?.price)} VND
                     </span>
+               
+                    <span className="bg-[#fedee3] text-red-600 text-xs font-bold py-1 px-2 rounded-full ml-2">
+                        -{productData?.discount}%
+                    </span>
+              
+                    <p className="!text-red-600 text-xl font-semibold ml-2">
+                        {formatPrice(productData?.price - (productData?.price * (productData?.discount / 100)))}
+                    </p>
                 </div>
-                <div style={styles.productInfo}>
-                    <p style={styles.infoText}>Còn lại: <strong>{productData?.quantity}</strong></p>
-                    <p style={styles.infoText}>Hãng: <strong>{productData?.brand}</strong></p>
-                    <p style={styles.infoText}>Đánh giá: <strong>{productData?.rating}</strong> ({productData?.totalReviews} đánh giá)</p>
-                    <p style={styles.infoText}>Đã bán: <strong>{productData?.sold}</strong></p>
+
+                <div className="space-y-2 text-gray-600 mb-8">
+                    <p>
+                        Còn lại:{" "}
+                        <strong>{productData?.quantity}</strong>
+                    </p>
+                    <p>
+                        Hãng: <strong className="text-blue-500">{productData?.brand}</strong>
+                    </p>
+                    <p className="flex items-center !text-yellow-500 font-semibold">
+                        {productData?.rating} <FaStar className="ml-1" />
+                        <span className="text-teal-400 ml-1"> ({productData?.totalReviews} đánh giá)</span>
+                    </p>
+                    <p>
+                        Đã bán:{" "}
+                        <strong className="text-orange-500">{productData?.sold}</strong>
+                    </p>
                 </div>
-                <div style={styles.ctaButtons}>
+
+                <div className="flex flex-wrap gap-4">
                     <button
-                        style={{ ...styles.button, ...styles.buyNow }}
-                        onMouseOver={(e) => e.target.style.backgroundColor = '#218838'}
-                        onMouseOut={(e) => e.target.style.backgroundColor = styles.buyNow.backgroundColor}
+                        className="px-6 py-3 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors duration-300"
                         onClick={() => handleBuyNow(productData?._id)}
                     >
-                        MUA NGAY
+                        Mua Ngay
                     </button>
                     <button
-                        style={{ ...styles.button, ...styles.addToCart }}
-                        onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-                        onMouseOut={(e) => e.target.style.backgroundColor = styles.addToCart.backgroundColor}
-                        onClick={() => handleAddToCart(productData?._id)}
-                    >
+                        className="px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors duration-300"
+                        onClick={() => handleAddToCart(productData?._id)}>
                         Thêm vào giỏ hàng
                     </button>
                 </div>
