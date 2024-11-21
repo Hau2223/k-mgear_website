@@ -3,40 +3,34 @@ import { FaSearch, FaHeadset, FaMapMarkerAlt, FaCamera, FaShoppingCart, FaNewspa
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
 import product from "../../utils/product.json";
-// import cart from "../../utils/cart.json";
-import axios from "axios";
+import { getCartByIdUserStatus } from "../../services/cartService";
+import { getProductById } from "../../services/productService";
 const Cart = ({ }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [carts, setCarts] = useState([]);
     const [products, setProducts] = useState([]);
     const userID = "6730551bf07941a1390ee637";
     useEffect(()=>{
-        axios.get(`http://localhost:8000/api/cart/getById/${userID}`)
-            .then(response => {
-                setCarts(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            }
-        );
-        var temp =[]
-        carts.map((cart)=>{
-            axios.get(`http://localhost:8000/api/product/getById/${cart.idProduct}`)
-                .then(response => {
-                    temp.push(response.data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                }
+        async function loadCarts (){
+            setCarts( await getCartByIdUserStatus(
+                {idUser: userID, 
+                status: "cart"}
+            ))
+            
+            const productData = await Promise.all(
+                carts.map(async (cart) => await getProductById(cart.idProduct))
             );
-        })
-        setProducts(temp);
-    },[userID]);
+
+            setProducts(productData);
+            
+        }
+        loadCarts ()
+    },[isHovered])
   
     return (
       <div
         className="relative block h-max"
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={()=> {setIsHovered(true); console.log(products)}}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex items-center">

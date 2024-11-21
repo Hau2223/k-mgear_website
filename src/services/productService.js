@@ -1,7 +1,7 @@
 import {
     get,
     post, put, del
-} from '../untils/axios';
+} from '../utils/axios';
 
 export const createProduct = async (params) => {
     return await post('/product/create', {
