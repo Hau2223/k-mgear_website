@@ -1,80 +1,91 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { ProductPageCollection } from "./components/productPageCollection.js";
-import { Filter } from "./components/filter.js";
+import { ProductFilter } from "./components/productFilter.js";
 import product from "../../utils/product.json";
 
 export function ProductPage() {
-    const { type } = useParams();
+    const navigate = useNavigate(); 
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-    const [nameFilter, setNameFilter] = useState('');
-    const [selectedType, setSelectedType] = useState(type);
-    const productTypes = [...new Set(product.map(({ type }) => type))];
-    const navigate = useNavigate();
+    const [priceRange, setPriceRange] = useState({ min: 0, max: 1000000 });
+    const [selectedType, setSelectedType] = useState("");
+    const [selectedBrand, setSelectedBrand] = useState("");
+    const [selectedSort, setSelectedSort] = useState("");
+
+    // Extract unique product types from product data
+    const productTypes = Array.from(new Set(product.map((p) => p.type)));
+
+    // Extract unique brands from product data
+    const productBrands = Array.from(new Set(product.map((p) => p.brand)));
 
     useEffect(() => {
-        setFilteredProducts(product);
-    }, []);
-
-    const handleFilterClick = () => {
-        let newFilteredProducts = product;
-
-        // Filter by name
-        if (nameFilter) {
-            newFilteredProducts = newFilteredProducts.filter(product =>
-                product.name.toLowerCase().includes(nameFilter.toLowerCase())
-            );
+        // If the type is not set from the URL, default to the first available product type
+        if (!selectedType && productTypes.length > 0) {
+            setSelectedType(productTypes[0]);
         }
+    }, [productTypes, selectedType]);
 
-        // Filter by price
+    useEffect(() => {
+        const filteredByType = product.filter((p) => p.type === selectedType);
+        setFilteredProducts(filteredByType);
+
+        // When selectedType changes, navigate to the new link
+        if (selectedType) {
+            navigate(`/collections/${selectedType}`);
+        }
+    }, [selectedType, navigate]);
+
+    const handleFilterChange = ({ type, priceRange, brand, sortOrder }) => {
+        let newFilteredProducts = product.filter((p) => p.type === selectedType);
+
         const minPrice = parseFloat(priceRange.min);
         const maxPrice = parseFloat(priceRange.max);
 
-        if (!isNaN(minPrice)) {
-            newFilteredProducts = newFilteredProducts.filter(product => product.price >= minPrice);
-        }
-        if (!isNaN(maxPrice)) {
-            newFilteredProducts = newFilteredProducts.filter(product => product.price <= maxPrice);
+        if (brand) {
+            newFilteredProducts = newFilteredProducts.filter((p) => p.brand === brand);
         }
 
-        // Filter by selected type
-        if (selectedType) {
-            handleViewAllClick(selectedType);
+        if (!isNaN(minPrice)) {
+            newFilteredProducts = newFilteredProducts.filter((p) => p.price >= minPrice);
+        }
+        if (!isNaN(maxPrice)) {
+            newFilteredProducts = newFilteredProducts.filter((p) => p.price <= maxPrice);
+        }
+
+        if (sortOrder) {
+            newFilteredProducts = newFilteredProducts.sort((a, b) => {
+                return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+            });
         }
 
         setFilteredProducts(newFilteredProducts);
-        console.log("Filtering with:", { nameFilter, priceRange, selectedType });
-        console.log("Filtered Products:", newFilteredProducts);
-    };
-
-    const handleViewAllClick = (type) => {
-        navigate(`/collections/${type}`);
     };
 
     const resetFilters = () => {
-        setNameFilter('');
-        setPriceRange({ min: '', max: '' });
-        setSelectedType(type);
-        setFilteredProducts(product);
+        setPriceRange({ min: 0, max: 1000000 });
+        setFilteredProducts(product.filter((p) => p.type === selectedType));
     };
 
     return (
-        <div className="flex flex-col w-4/5 mx-auto border border-gray-300">
-            <div className="flex justify-center items-center border-b border-gray-300 w-full sticky top-0 bg-white z-50 h-20">
-                <Filter
-                    nameFilter={nameFilter}
-                    setNameFilter={setNameFilter}
-                    priceRange={priceRange}
-                    setPriceRange={setPriceRange}
-                    onFilterClick={handleFilterClick}
-                    onResetFilters={resetFilters}
-                    productTypes={productTypes}
-                    selectedType={selectedType}
-                    setSelectedType={setSelectedType}
-                />
-            </div>
-            <ProductPageCollection type={type} products={filteredProducts} />
+        <div className="my-6 max-w-7xl">
+            {/* Filter Section */}
+            <ProductFilter
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                selectedType={selectedType}
+                setSelectedType={setSelectedType}
+                selectedBrand={selectedBrand}
+                setSelectedBrand={setSelectedBrand}
+                productTypes={productTypes}
+                productBrands={productBrands}  // Pass extracted product brands here
+                selectedSort={selectedSort} // Pass selectedSort here
+                setSortOrder={setSelectedSort} // Pass setSortOrder here
+                onFilterChange={handleFilterChange}
+                onResetFilters={resetFilters}
+            />
+
+            {/* Product Collection Section */}
+            <ProductPageCollection type={selectedType} products={filteredProducts} />
         </div>
     );
 }

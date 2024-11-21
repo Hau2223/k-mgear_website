@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { FaMinus, FaPlus } from 'react-icons/fa';
 
-export function SearchFilter({
+export const ProductFilter = ({
     priceRange,
     setPriceRange,
     selectedType,
@@ -11,101 +11,63 @@ export function SearchFilter({
     productTypes,
     productBrands,
     onFilterChange,
-    setSortOrder, // Assuming a parent function to handle the sort change
-}) {
-    const [minPrice, setMinPrice] = useState(priceRange.min || '');
-    const [maxPrice, setMaxPrice] = useState(priceRange.max || '');
-    const [selectedSort, setSelectedSort] = useState(''); // New state for sorting option
+    setSortOrder,
+}) => {
+    const [minPrice, setMinPrice] = useState(priceRange.min || "");
+    const [maxPrice, setMaxPrice] = useState(priceRange.max || "");
+    const [selectedSort, setSelectedSort] = useState(""); // New state for sorting option
 
     useEffect(() => {
-        setMinPrice(priceRange.min || '');
-        setMaxPrice(priceRange.max || '');
+        setMinPrice(priceRange.min || "");
+        setMaxPrice(priceRange.max || "");
     }, [priceRange]);
 
     const handleTypeChange = (e) => {
         const newType = e.target.value;
         setSelectedType(newType);
-        onFilterChange({
-            type: newType,
-            brand: selectedBrand,
-            priceRange: { min: minPrice, max: maxPrice },
-            sortOrder: selectedSort,
-        });
+        onFilterChange({ type: newType, priceRange, brand: selectedBrand, sortOrder: selectedSort });
     };
 
     const handleBrandChange = (e) => {
         const newBrand = e.target.value;
         setSelectedBrand(newBrand);
-        onFilterChange({
-            type: selectedType,
-            brand: newBrand,
-            priceRange: { min: minPrice, max: maxPrice },
-            sortOrder: selectedSort,
-        });
+        onFilterChange({ type: selectedType, priceRange, brand: newBrand, sortOrder: selectedSort });
     };
 
     const handlePriceRangeChange = () => {
         setPriceRange({ min: minPrice, max: maxPrice });
-        onFilterChange({
-            type: selectedType,
-            brand: selectedBrand,
-            priceRange: { min: minPrice, max: maxPrice },
-            sortOrder: selectedSort,
-        });
+        onFilterChange({ type: selectedType, priceRange: { min: minPrice, max: maxPrice }, brand: selectedBrand, sortOrder: selectedSort });
     };
 
     const handleSortChange = (e) => {
         const sortOrder = e.target.value;
         setSelectedSort(sortOrder);
         setSortOrder(sortOrder); // Pass sort order up to parent
-        onFilterChange({
-            type: selectedType,
-            brand: selectedBrand,
-            priceRange: { min: minPrice, max: maxPrice },
-            sortOrder: sortOrder,
-        });
-    };
-
-    const handleMinPriceChange = (e) => {
-        const value = e.target.value;
-        setMinPrice(value);
-    };
-
-    const handleMaxPriceChange = (e) => {
-        const value = e.target.value;
-        setMaxPrice(value);
-    };
-
-    // Adjust min price with validation
-    const adjustMinPrice = (amount) => {
-        let newMinPrice = (Number(minPrice) || 0) + amount;
-        if (newMinPrice < 0) newMinPrice = 0; // Prevent min price from going below 0
-        if (newMinPrice > (Number(maxPrice) || 0)) newMinPrice = Number(maxPrice) || 0; // Prevent min price from being greater than max price
-        setMinPrice(newMinPrice.toString());
-    };
-
-    // Adjust max price with validation
-    const adjustMaxPrice = (amount) => {
-        let newMaxPrice = (Number(maxPrice) || 0) + amount;
-        if (newMaxPrice < (Number(minPrice) || 0)) newMaxPrice = Number(minPrice) || 0; // Prevent max price from going below min price
-        setMaxPrice(newMaxPrice.toString());
+        onFilterChange({ type: selectedType, priceRange, brand: selectedBrand, sortOrder });
     };
 
     const clearAllFilters = () => {
-        // Reset all filter states
-        setSelectedType('');
-        setSelectedBrand('');
-        setMinPrice('');
-        setMaxPrice('');
-        setPriceRange({ min: '', max: '' });
-        setSelectedSort(''); // Reset sort order
+        setSelectedType(setSelectedType);
+        setSelectedBrand("");
+        setMinPrice("");
+        setMaxPrice("");
+        setPriceRange({ min: "", max: "" });
+        setSelectedSort("");
+        onFilterChange({ type: "", priceRange: { min: "", max: "" }, brand: "", sortOrder: "" });
+    };
 
-        // Apply the reset filter to products
-        onFilterChange({
-            type: '',
-            brand: '',
-            priceRange: { min: '', max: '' },
-            sortOrder: '',
+    // Adjust price functions
+    const adjustMinPrice = (amount) => {
+        setMinPrice(prevMinPrice => {
+            const newMinPrice = (parseInt(prevMinPrice || 0) + amount);
+            return newMinPrice > 0 ? newMinPrice : 0;
+        });
+    };
+
+    const adjustMaxPrice = (amount) => {
+        setMaxPrice(prevMaxPrice => {
+            const newMaxPrice = (parseInt(prevMaxPrice || 0) + amount);
+            return newMaxPrice >= minPrice ? newMaxPrice : minPrice;
         });
     };
 
@@ -120,7 +82,6 @@ export function SearchFilter({
                     onChange={handleTypeChange}
                     className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                    <option value="">Tất cả</option>
                     {productTypes.map((type, index) => (
                         <option key={index} value={type}>{type}</option>
                     ))}
@@ -158,9 +119,9 @@ export function SearchFilter({
                         <input
                             type="text"
                             value={minPrice}
-                            onChange={handleMinPriceChange}
+                            onChange={(e) => setMinPrice(e.target.value)}
                             placeholder="Min"
-                            className="p-2 w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className=" w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <button
                             onClick={() => adjustMinPrice(500000)}
@@ -184,7 +145,7 @@ export function SearchFilter({
                         <input
                             type="text"
                             value={maxPrice}
-                            onChange={handleMaxPriceChange}
+                            onChange={(e) => setMaxPrice(e.target.value)}
                             placeholder="Max"
                             className="w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -233,4 +194,4 @@ export function SearchFilter({
             </div>
         </div>
     );
-}
+};
