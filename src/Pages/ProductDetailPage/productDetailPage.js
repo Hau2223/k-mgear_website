@@ -62,7 +62,7 @@ export function ProductDetailPageBody() {
                     <img
                         src={productData?.imageUrl || "/path/to/fallback-image.jpg"}
                         alt={productData?.name}
-                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain transform hover:scale-105 transition-transform duration-300"
                     />
                 </div>
             </div>
