@@ -15,12 +15,16 @@ export function SearchFilter({
 }) {
     const [minPrice, setMinPrice] = useState(priceRange.min || '');
     const [maxPrice, setMaxPrice] = useState(priceRange.max || '');
-    const [selectedSort, setSelectedSort] = useState(''); // New state for sorting option
+    const [selectedSort, setSelectedSort] = useState('asc'); // New state for sorting option
 
     useEffect(() => {
         setMinPrice(priceRange.min || '');
         setMaxPrice(priceRange.max || '');
     }, [priceRange]);
+
+    const formatPrice = (price) => {
+        return price.toLocaleString('vi-VN');
+    };
 
     const handleTypeChange = (e) => {
         const newType = e.target.value;
@@ -98,7 +102,7 @@ export function SearchFilter({
         setMinPrice('');
         setMaxPrice('');
         setPriceRange({ min: '', max: '' });
-        setSelectedSort(''); // Reset sort order
+        setSelectedSort(selectedSort); // Reset sort order
 
         // Apply the reset filter to products
         onFilterChange({
@@ -157,7 +161,7 @@ export function SearchFilter({
                         </button>
                         <input
                             type="text"
-                            value={minPrice}
+                            value={formatPrice(minPrice)}
                             onChange={handleMinPriceChange}
                             placeholder="Min"
                             className="p-2 w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -183,7 +187,7 @@ export function SearchFilter({
                         </button>
                         <input
                             type="text"
-                            value={maxPrice}
+                            value={formatPrice(maxPrice)}
                             onChange={handleMaxPriceChange}
                             placeholder="Max"
                             className="w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -207,8 +211,8 @@ export function SearchFilter({
                     onChange={handleSortChange}
                     className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                    <option value="asc">Giá tăng dần</option>
-                    <option value="desc">Giá giảm dần</option>
+                    <option value="asc">Tăng dần</option>
+                    <option value="desc">Giảm dần</option>
                 </select>
             </div>
 

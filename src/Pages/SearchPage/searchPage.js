@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SearchFilter } from './components/searchFilter.js';
 import { SearchPageCollection } from './components/searchCollection.js';
 import { useParams } from 'react-router-dom';
-import products from '../../utils/product.json';
+import { getAll } from "../../services/productService";
 
 export function SearchPage() {
     const { searchTerm } = useParams();
@@ -14,7 +14,50 @@ export function SearchPage() {
     });
     const [productTypes, setProductTypes] = useState([]);
     const [productBrands, setProductBrands] = useState([]);
-    const [sortOrder, setSortOrder] = useState('asc'); // State for sorting order
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [productData, setProductData] = useState(null);
+
+    // Fetch product data when component mounts or searchTerm changes
+    useEffect(() => {
+        const fetchProductData = async () => {
+            try {
+                const response = await getAll();
+                if (response) {
+                    setProductData(response);
+                } else {
+                    console.error('Error fetching products');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+            }
+        };
+        fetchProductData();
+    }, [searchTerm]);
+    // Apply filters and sorting when filters, searchTerm, or sortOrder change
+    useEffect(() => {
+        if (productData) {
+            let productsToFilter = productData;
+
+            // First, apply searchTerm filter if it exists
+            if (searchTerm) {
+                productsToFilter = productsToFilter.filter(
+                    (product) =>
+                        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            // Set the available types and brands based on filtered products
+            const types = [...new Set(productsToFilter.map(product => product.type))];
+            const brands = [...new Set(productsToFilter.map(product => product.brand))];
+
+            setProductTypes(types);
+            setProductBrands(brands);
+
+            // Then apply other filters and sorting
+            filterProducts(productsToFilter);
+        }
+    }, [filters, searchTerm, sortOrder, productData]);
 
     // Function to filter products based on filters
     const filterProducts = (products) => {
@@ -27,7 +70,6 @@ export function SearchPage() {
         if (filters.brand) {
             filtered = filtered.filter((product) => product.brand === filters.brand);
         }
-
         // Apply price range filter
         if (filters.priceRange.min || filters.priceRange.max) {
             filtered = filtered.filter(
@@ -36,7 +78,6 @@ export function SearchPage() {
                     (filters.priceRange.max === '' || product.price <= filters.priceRange.max)
             );
         }
-
         // Apply sorting if sortOrder is set
         if (sortOrder === 'asc') {
             filtered = filtered.sort((a, b) => a.price - b.price);
@@ -47,37 +88,17 @@ export function SearchPage() {
         setFilteredProducts(filtered);
     };
 
+    // Function to handle filter changes
     const handleFilterChange = (newFilters) => {
         setFilters(newFilters);
     };
 
+    // Function to handle sort changes
     const handleSortChange = (newSortOrder) => {
         setSortOrder(newSortOrder); // Update sort order
     };
 
-    useEffect(() => {
-        let productsToFilter = products;
 
-        // First, apply searchTerm filter if it exists
-        if (searchTerm) {
-            productsToFilter = productsToFilter.filter(
-                (product) =>
-                    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    product.description.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
-
-        // Set the available types and brands based on filtered products
-        const types = [...new Set(productsToFilter.map(product => product.type))];
-        const brands = [...new Set(productsToFilter.map(product => product.brand))];
-
-        setProductTypes(types);
-        setProductBrands(brands);
-
-        // Then apply other filters and sorting
-        filterProducts(productsToFilter);
-
-    }, [filters, searchTerm, sortOrder]);
 
     return (
         <div className="m-6 max-w-7xl mx-auto">
@@ -102,7 +123,6 @@ export function SearchPage() {
                 onFilterChange={handleFilterChange}
                 setSortOrder={handleSortChange}
             />
-
             <SearchPageCollection products={filteredProducts} />
         </div>
     );

@@ -1,50 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ProductPageCollection } from "./components/productPageCollection.js";
 import { ProductFilter } from "./components/productFilter.js";
-import product from "../../utils/product.json";
+import { getProductByType } from "../../services/productService.js";
 
 export function ProductPage() {
-    const navigate = useNavigate(); 
+    const { type } = useParams();
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [priceRange, setPriceRange] = useState({ min: 0, max: 1000000 });
-    const [selectedType, setSelectedType] = useState("");
-    const [selectedBrand, setSelectedBrand] = useState("");
-    const [selectedSort, setSelectedSort] = useState("");
-
-    // Extract unique product types from product data
-    const productTypes = Array.from(new Set(product.map((p) => p.type)));
-
-    // Extract unique brands from product data
-    const productBrands = Array.from(new Set(product.map((p) => p.brand)));
+    const [productAll, setProductAll] = useState([]);
+    const productTypes = ["Bàn phím", "Tai nghe", "Chuột", "Màn hình"];
+    const [filters, setFilters] = useState({
+        type: '',
+        brand: '',
+        priceRange: { min: '', max: '' },
+        sortOrder: 'asc',
+    });
+   
+    useEffect(() => {
+        if (type) {
+            setFilters((prevFilters) => ({ ...prevFilters, type }));
+            fetchProductNeeded(type);
+        }
+    }, [type]);
 
     useEffect(() => {
-        // If the type is not set from the URL, default to the first available product type
-        if (!selectedType && productTypes.length > 0) {
-            setSelectedType(productTypes[0]);
+        // Apply filters whenever productAll or filters change
+        if (productAll.length > 0) {
+            applyFilters(filters);
         }
-    }, [productTypes, selectedType]);
+    }, [filters, productAll]);
 
-    useEffect(() => {
-        const filteredByType = product.filter((p) => p.type === selectedType);
-        setFilteredProducts(filteredByType);
-
-        // When selectedType changes, navigate to the new link
-        if (selectedType) {
-            navigate(`/collections/${selectedType}`);
+    const fetchProductNeeded = async (type) => {
+        try {
+            const response = await getProductByType(type);
+            if (!response) {
+                throw new Error("Failed to fetch products.");
+            }
+            setProductAll(response);
+        } catch (error) {
+            console.error("Fetch error:", error.message);
         }
-    }, [selectedType, navigate]);
+    };
 
-    const handleFilterChange = ({ type, priceRange, brand, sortOrder }) => {
-        let newFilteredProducts = product.filter((p) => p.type === selectedType);
+    const handleFilterChange = ({ priceRange, brand, sortOrder }) => {
+        setFilters({ ...filters, priceRange, brand, sortOrder });
+    };
 
-        const minPrice = parseFloat(priceRange.min);
-        const maxPrice = parseFloat(priceRange.max);
-
+    const applyFilters = ({ type, priceRange, brand, sortOrder }) => {
+        let newFilteredProducts = [...productAll];
+        // Filter by type
+        if (type) {
+            newFilteredProducts = newFilteredProducts.filter((p) => p.type === type);
+        }
+        // Filter by brand
         if (brand) {
             newFilteredProducts = newFilteredProducts.filter((p) => p.brand === brand);
         }
-
+        // Filter by price range
+        const minPrice = parseFloat(priceRange.min);
+        const maxPrice = parseFloat(priceRange.max);
         if (!isNaN(minPrice)) {
             newFilteredProducts = newFilteredProducts.filter((p) => p.price >= minPrice);
         }
@@ -52,40 +66,46 @@ export function ProductPage() {
             newFilteredProducts = newFilteredProducts.filter((p) => p.price <= maxPrice);
         }
 
+        // Sort products by price
         if (sortOrder) {
-            newFilteredProducts = newFilteredProducts.sort((a, b) => {
-                return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
-            });
+            newFilteredProducts.sort((a, b) => (sortOrder === "asc" ? a.price - b.price : b.price - a.price));
         }
 
         setFilteredProducts(newFilteredProducts);
     };
 
     const resetFilters = () => {
-        setPriceRange({ min: 0, max: 1000000 });
-        setFilteredProducts(product.filter((p) => p.type === selectedType));
+        setFilters({
+            type: '',
+            brand: '',
+            priceRange: { min: '', max: '' },
+            sortOrder: 'asc',
+        });
+        setFilteredProducts(productAll);
     };
+
+    const productBrands = Array.from(new Set(productAll.map((p) => p.brand)));
 
     return (
         <div className="my-6 max-w-7xl">
             {/* Filter Section */}
             <ProductFilter
-                priceRange={priceRange}
-                setPriceRange={setPriceRange}
-                selectedType={selectedType}
-                setSelectedType={setSelectedType}
-                selectedBrand={selectedBrand}
-                setSelectedBrand={setSelectedBrand}
+                priceRange={filters.priceRange}
+                setPriceRange={(newPriceRange) => setFilters({ ...filters, priceRange: newPriceRange })}
+                selectedType={filters.type}
+                setSelectedType={(newType) => setFilters({ ...filters, type: newType })}
+                selectedBrand={filters.brand}
+                setSelectedBrand={(newBrand) => setFilters({ ...filters, brand: newBrand })}
                 productTypes={productTypes}
-                productBrands={productBrands}  // Pass extracted product brands here
-                selectedSort={selectedSort} // Pass selectedSort here
-                setSortOrder={setSelectedSort} // Pass setSortOrder here
+                productBrands={productBrands}
+                selectedSort={filters.sortOrder}
+                setSortOrder={(newSortOrder) => setFilters({ ...filters, sortOrder: newSortOrder })}
                 onFilterChange={handleFilterChange}
                 onResetFilters={resetFilters}
             />
 
             {/* Product Collection Section */}
-            <ProductPageCollection type={selectedType} products={filteredProducts} />
+            <ProductPageCollection type={filters.type} products={filteredProducts} />
         </div>
     );
 }

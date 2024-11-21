@@ -3,6 +3,7 @@ import { FaSearch, FaHeadset, FaMapMarkerAlt, FaCamera, FaShoppingCart, FaNewspa
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
 import product from "../../utils/product.json";
+import { getAll } from "../../services/productService.js";
 import cart from "../../utils/cart.json";
 
 const Cart = ({ }) => {
@@ -58,19 +59,27 @@ const Cart = ({ }) => {
     );
 };
 
-
-
-
 export function Header() {
-
-
     const [productData, setProductData] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        setProductData(product);
+        fetchAllProduct();
     }, []);
 
+    const fetchAllProduct = async () => {
+        try {
+            const response = await getAll();
+            if (!response) {
+                throw new Error('Network response was not ok');
+            } else {
+                setProductData(response)
+            }
+        } catch (error) {
+            console.error('Fetch error:', error.message);
+            }
+    }
+   
     const formatPrice = (price) => {
         return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', '').trim();
     };
@@ -162,7 +171,7 @@ export function Header() {
                                     <p className="text-lg text-black font-semibold">{product.name}</p>
                                     <div className="flex items-center">
                                         <p className="text-red-500 font-semibold pr-1">
-                                            {formatPrice(product.price / (1 - product.discount / 100))}
+                                            {formatPrice(product.price * (1 - product.discount / 100))}
                                         </p>
                                         <p className="text-gray-500 line-through mr-2">
                                             {formatPrice(product.price)}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import { FaMinus, FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export const ProductFilter = ({
     priceRange,
@@ -15,61 +16,76 @@ export const ProductFilter = ({
 }) => {
     const [minPrice, setMinPrice] = useState(priceRange.min || "");
     const [maxPrice, setMaxPrice] = useState(priceRange.max || "");
-    const [selectedSort, setSelectedSort] = useState(""); // New state for sorting option
+    const [selectedSort, setSelectedSort] = useState("asc");
+    const navigate = useNavigate();
 
     useEffect(() => {
         setMinPrice(priceRange.min || "");
         setMaxPrice(priceRange.max || "");
     }, [priceRange]);
 
-    const handleTypeChange = (e) => {
-        const newType = e.target.value;
-        setSelectedType(newType);
-        onFilterChange({ type: newType, priceRange, brand: selectedBrand, sortOrder: selectedSort });
+    const formatPrice = (price) => {
+        return price.toLocaleString('vi-VN');
     };
 
     const handleBrandChange = (e) => {
         const newBrand = e.target.value;
         setSelectedBrand(newBrand);
-        onFilterChange({ type: selectedType, priceRange, brand: newBrand, sortOrder: selectedSort });
+        onFilterChange({
+            priceRange,
+            brand: newBrand,
+            sortOrder: selectedSort,
+        });
     };
 
     const handlePriceRangeChange = () => {
         setPriceRange({ min: minPrice, max: maxPrice });
-        onFilterChange({ type: selectedType, priceRange: { min: minPrice, max: maxPrice }, brand: selectedBrand, sortOrder: selectedSort });
+        onFilterChange({
+            priceRange: { min: minPrice, max: maxPrice },
+            brand: selectedBrand,
+            sortOrder: selectedSort,
+        });
     };
 
     const handleSortChange = (e) => {
         const sortOrder = e.target.value;
         setSelectedSort(sortOrder);
-        setSortOrder(sortOrder); // Pass sort order up to parent
-        onFilterChange({ type: selectedType, priceRange, brand: selectedBrand, sortOrder });
-    };
-
-    const clearAllFilters = () => {
-        setSelectedType(setSelectedType);
-        setSelectedBrand("");
-        setMinPrice("");
-        setMaxPrice("");
-        setPriceRange({ min: "", max: "" });
-        setSelectedSort("");
-        onFilterChange({ type: "", priceRange: { min: "", max: "" }, brand: "", sortOrder: "" });
-    };
-
-    // Adjust price functions
-    const adjustMinPrice = (amount) => {
-        setMinPrice(prevMinPrice => {
-            const newMinPrice = (parseInt(prevMinPrice || 0) + amount);
-            return newMinPrice > 0 ? newMinPrice : 0;
+        setSortOrder(sortOrder);
+        onFilterChange({
+            priceRange,
+            brand: selectedBrand,
+            sortOrder,
         });
+    };
+
+    const adjustMinPrice = (amount) => {
+        setMinPrice((prev) => Math.max(0, parseInt(prev || 0) + amount));
     };
 
     const adjustMaxPrice = (amount) => {
-        setMaxPrice(prevMaxPrice => {
-            const newMaxPrice = (parseInt(prevMaxPrice || 0) + amount);
-            return newMaxPrice >= minPrice ? newMaxPrice : minPrice;
-        });
+        setMaxPrice((prev) => Math.max(minPrice, parseInt(prev || 0) + amount));
     };
+
+    const handleTypeSelect = (type) => {
+        setSelectedType(type);
+        navigate(`/collections/${type}`);
+        onFilterChange({ type, priceRange, brand: selectedBrand, sortOrder: selectedSort });
+    };
+
+    const clearAllFilters = () => {
+        setMinPrice('');
+        setMaxPrice('');
+        setSelectedBrand('');
+        setPriceRange({ min: '', max: '' });
+
+        // Notify parent to reset only price and brand filters
+        onFilterChange({
+            priceRange: { min: '', max: '' },
+            brand: '',
+            sortOrder: selectedSort,
+            type: selectedType,
+        });
+    };;
 
     return (
         <div className="flex justify-center flex-wrap gap-6 mb-6 p-4 bg-white shadow-md rounded-lg">
@@ -79,7 +95,7 @@ export const ProductFilter = ({
                 <select
                     id="type"
                     value={selectedType}
-                    onChange={handleTypeChange}
+                    onChange={(e) => handleTypeSelect(e.target.value)}
                     className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                     {productTypes.map((type, index) => (
@@ -118,10 +134,10 @@ export const ProductFilter = ({
                         </button>
                         <input
                             type="text"
-                            value={minPrice}
-                            onChange={(e) => setMinPrice(e.target.value)}
+                            value={formatPrice(minPrice)}
+                            onChange={handlePriceRangeChange}
                             placeholder="Min"
-                            className=" w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="p-2 w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <button
                             onClick={() => adjustMinPrice(500000)}
@@ -144,8 +160,8 @@ export const ProductFilter = ({
                         </button>
                         <input
                             type="text"
-                            value={maxPrice}
-                            onChange={(e) => setMaxPrice(e.target.value)}
+                            value={formatPrice(maxPrice)}
+                            onChange={handlePriceRangeChange}
                             placeholder="Max"
                             className="w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -159,9 +175,10 @@ export const ProductFilter = ({
                 </div>
             </div>
 
-            {/* Sort by Price */}
+
+            {/* Sort Filter */}
             <div className="flex items-center gap-2">
-                <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo giá:</label>
+                <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo:</label>
                 <select
                     id="sort"
                     value={selectedSort}
@@ -173,7 +190,7 @@ export const ProductFilter = ({
                 </select>
             </div>
 
-            {/* Apply Filter Button for Price Range */}
+            {/* Apply Filter Button */}
             <div className="flex items-center">
                 <button
                     onClick={handlePriceRangeChange}
@@ -193,5 +210,6 @@ export const ProductFilter = ({
                 </button>
             </div>
         </div>
+
     );
 };
