@@ -5,9 +5,17 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // Create a new cart
-app.post('/create', (req, res) => {
+app.post('/create', async (req, res)  => {
     const { idUser, idProduct, amount, status } = req.body;
+    const existingCart = await Cart.findOne({ idProduct, idUser, status: "cart" });
+    console.log(existingCart);
+    
+    if (existingCart) {
+        return res.status(200).json({ message: 'Already in cart!' });
+    }
     const newCart = new Cart({ idUser, idProduct, amount, status });
+    console.log(newCart);
+    
     newCart
         .save()
         .then(() => {
@@ -28,7 +36,7 @@ app.get('/getById/:idUser', async (req, res) => {
         }
         res.status(200).json(carts);
     } catch (error) {
-        console.error('Error fetching cart:', error);
+        console.log('Error fetching cart:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
