@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaStar } from 'react-icons/fa';
 import { getProductById } from "../../services/productService";
-
 export function ProductDetailPage() {
     return <ProductDetailPageBody />;
 }
@@ -34,26 +33,23 @@ export function ProductDetailPageBody() {
     };
 
     const handleAddToCart = (productID) => {
-        const existingCarts = JSON.parse(localStorage.getItem("carts")) || [];
-
-        if (existingCarts.find((item) => item.productID === productID)) {
-            return;
-        }
-
         const now = new Date();
         const formattedDateTime = now.toLocaleString();
-
-        const newCartItem = {
-            _id: `cart_${existingCarts.length}`,
-            productID: productID,
-            quantity: 1,
-            status: "waiting",
-            date: formattedDateTime,
-        };
-
-        const updatedCarts = [...existingCarts, newCartItem];
-        localStorage.setItem("carts", JSON.stringify(updatedCarts));
-
+        axios.get(`http://localhost:8000/api/cart/create`,
+            {
+                idUser: '6730551bf07941a1390ee637',     
+                idProduct: productID, 
+                amount: 1,            
+                status: 'cart'
+            }
+        )
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            }
+        );
         alert("Item added to cart!");
     };
 

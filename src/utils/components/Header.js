@@ -3,46 +3,56 @@ import { FaSearch, FaHeadset, FaMapMarkerAlt, FaCamera, FaShoppingCart, FaNewspa
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
 import product from "../../utils/product.json";
-import { getAll } from "../../services/productService.js";
-import cart from "../../utils/cart.json";
-
+import { getCartByIdUserStatus } from "../../services/cartService";
+import { getAll, getProductById} from "../../services/productService.js";
 const Cart = ({ }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [carts, setCarts] = useState([]);
     const [products, setProducts] = useState([]);
+    const userID = "6730551bf07941a1390ee637";
+    useEffect(()=>{
+        async function loadCarts (){
+            setCarts( await getCartByIdUserStatus(
+                {idUser: userID, 
+                status: "cart"}
+            ))
+            
+            const productData = await Promise.all(
+                carts.map(async (cart) => await getProductById(cart.idProduct))
+            );
 
-    useEffect(() => {
-        const list = cart.map((cartItem) =>
-            product.find((item) => item._id === cartItem.productID)
-        );
-        setProducts(list);
-    }, []);
-
+            setProducts(productData);
+            
+        }
+        loadCarts ()
+    },[isHovered])
+  
     return (
-        <div
-            className="relative block h-max"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <div className="flex items-center">
-                <FaShoppingCart />
-                <span className="ml-1">Giỏ hàng</span>
-            </div>
-            {isHovered && (
-                <div className="absolute top-5 right-0 w-80 max-h-96 overflow-y-auto bg-white border border-gray-300 shadow-lg rounded-lg p-4 z-10">
-                    <h2 className="text-lg mb-4 text-gray-800">Giỏ hàng</h2>
-                    {cart.length > 0 ? (
-                        <ul className="list-none m-0 p-0">
-                            {cart.map((item, index) => (
-                                <li className="flex items-center border-b border-gray-200 py-3" key={index}>
-                                    <img
-                                        className="w-12 h-12 rounded-md mr-3 object-cover"
-                                        src={products[index]?.imageUrl}
-                                        alt={products[index]?.name}
-                                    />
-                                    <div className="flex-1">
-                                        <p className="font-bold text-gray-800">{products[index]?.name}</p>
-                                        {/* <p className="text-gray-600 text-sm">
-                        Price: {((products[index]?.price * (100 - products[index]?.discount) * item.quantity) / 100)} VND
+      <div
+        className="relative block h-max"
+        onMouseEnter={()=> {setIsHovered(true); console.log(products)}}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="flex items-center">
+          <FaShoppingCart />
+          <span className="ml-1">Giỏ hàng</span>
+        </div>
+        {isHovered && (
+          <div className="absolute top-5 right-0 w-80 max-h-96 overflow-y-auto bg-white border border-gray-300 shadow-lg rounded-lg p-4 z-10">
+            <h2 className="text-lg mb-4 text-gray-800">Giỏ hàng</h2>
+            {products.length > 0 ? (
+              <ul className="list-none m-0 p-0">
+                {products.map((item, index) => (
+                  <li className="flex items-center border-b border-gray-200 py-3" key={index}>
+                    <img
+                      className="w-12 h-12 rounded-md mr-3 object-cover"
+                      src={item?.imageUrl}
+                      alt={item?.name}
+                    />
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-800">{item?.name}</p>
+                      {/* <p className="text-gray-600 text-sm">
+                        Price: {((carts[index]?.price * (100 - carts[index]?.discount) * item.quantity) / 100)} VND
                       </p>
                       <p className="text-gray-600 text-sm">Quantity: {item.quantity}</p> */}
                                     </div>
