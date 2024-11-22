@@ -17,17 +17,27 @@ export function SearchPageCollection({ products }) {
     return (
         <div className="p-4 bg-gray-100 rounded-lg shadow-md">
             {/* Cards Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products.slice(0, visibleProduct).map((item) => (
-                    <div
-                        key={item._id}
-                        onClick={() => handleCardClick(item._id)}
-                        className="cursor-pointer hover:scale-105 transform transition-all"
-                    >
-                        <Card item={item} />
-                    </div>
-                ))}
-            </div>
+            {products.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {products.slice(0, visibleProduct).map((item) => (
+                        <div
+                            key={item._id}
+                            onClick={() => handleCardClick(item._id)}
+                            className="cursor-pointer hover:scale-105 transform transition-all"
+                        >
+                            <Card item={item} />
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center text-gray-600">
+                    Rất tiếc, chúng tôi không tìm thấy kết quả cho của bạn.
+                    <br />
+                    Vui lòng kiểm tra chính tả, sử dụng từ tổng quát hơn hoặc thay đổi bộ lọc và thử lại!
+                </div>
+            )}
+
+            {/* Show More Button */}
             {products.length > visibleProduct && (
                 <div className="text-center mt-6">
                     <button

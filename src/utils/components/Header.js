@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
 import product from "../../utils/product.json";
 import { getCartByIdUserStatus } from "../../services/cartService";
-import { getProductById } from "../../services/productService";
+import { getAll, getProductById} from "../../services/productService.js";
 const Cart = ({ }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [carts, setCarts] = useState([]);
@@ -55,33 +55,41 @@ const Cart = ({ }) => {
                         Price: {((carts[index]?.price * (100 - carts[index]?.discount) * item.quantity) / 100)} VND
                       </p>
                       <p className="text-gray-600 text-sm">Quantity: {item.quantity}</p> */}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-center text-gray-500 text-sm">Giỏ hàng của bạn đang trống.</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-center text-gray-500 text-sm">Giỏ hàng của bạn đang trống.</p>
+                    )}
+                    <Link to="/cart" className="block w-full py-3 mt-4 bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300 font-bold text-white text-md no-underline text-center">Xem giỏ hàng</Link>
+                </div>
             )}
-            <Link to="/cart" className="block w-full py-3 mt-4 bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300 font-bold text-white text-md no-underline text-center">Xem giỏ hàng</Link>
-          </div>
-        )}
-      </div>
+        </div>
     );
-  };
-
-
-
+};
 
 export function Header() {
-
-
     const [productData, setProductData] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        setProductData(product);
+        fetchAllProduct();
     }, []);
 
+    const fetchAllProduct = async () => {
+        try {
+            const response = await getAll();
+            if (!response) {
+                throw new Error('Network response was not ok');
+            } else {
+                setProductData(response)
+            }
+        } catch (error) {
+            console.error('Fetch error:', error.message);
+            }
+    }
+   
     const formatPrice = (price) => {
         return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', '').trim();
     };
@@ -144,11 +152,6 @@ export function Header() {
             handleSearch(term);
         };
 
-        const handleResultClick = (id) => {
-            navigate(`/product/${id}`);
-            setSearchResults([]);
-        };
-
         return (
             <div className="relative flex items-center w-full max-w-md">
                 <input
@@ -169,16 +172,16 @@ export function Header() {
                         ref={searchResultsRef}
                     >
                         {searchResults.slice(0, 5).map((product) => (
-                            <div
+                            <Link
                                 key={product._id}
+                                to={`product/${product._id}`} 
                                 className="flex items-center p-4 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => handleResultClick(product._id)}
                             >
                                 <div className="flex-grow">
                                     <p className="text-lg text-black font-semibold">{product.name}</p>
                                     <div className="flex items-center">
                                         <p className="text-red-500 font-semibold pr-1">
-                                            {formatPrice(product.price / (1 - product.discount / 100))}
+                                            {formatPrice(product.price * (1 - product.discount / 100))}
                                         </p>
                                         <p className="text-gray-500 line-through mr-2">
                                             {formatPrice(product.price)}
@@ -190,7 +193,7 @@ export function Header() {
                                     alt={product.name}
                                     className="w-20 h-20 object-contain ml-auto px-1"
                                 />
-                            </div>
+                            </Link>
                         ))}
                         {searchResults.length > 5 && (
                             <div
@@ -212,10 +215,12 @@ export function Header() {
             <div className="flex justify-between items-center py-2 max-w-screen-xl mx-auto w-full bg-red-600">
                 {/* Logo */}
                 <div className="flex items-center w-1/10">
-                    <div className="cursor-pointer" onClick={() => navigate('/')}>
-                        <img src={logo} alt="Logo" className="w-20 h-20 object-cover" />
+                    <div className="cursor-pointer">
+                        <Link to={`/`}>
+                            <img src={logo} alt="Logo" className="w-20 h-20 object-cover" />
+                        </Link>
                     </div>
-                    
+
                 </div>
                 {/* SearchBar */}
                 <div className="flex-grow mx-4">
@@ -234,7 +239,7 @@ export function Header() {
                     </Link>
                     <Link to="/" className="flex items-center">
                         {/* <FaShoppingCart className="mr-2" /> Giỏ hàng */}
-                        <Cart/>
+                        <Cart />
                     </Link>
                 </div>
             </div>

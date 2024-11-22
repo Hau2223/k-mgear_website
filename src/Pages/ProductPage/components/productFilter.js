@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { FaMinus, FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-export function SearchFilter({
+export const ProductFilter = ({
     priceRange,
     setPriceRange,
     selectedType,
@@ -11,39 +12,28 @@ export function SearchFilter({
     productTypes,
     productBrands,
     onFilterChange,
-    setSortOrder, // Assuming a parent function to handle the sort change
-}) {
-    const [minPrice, setMinPrice] = useState(priceRange.min || '');
-    const [maxPrice, setMaxPrice] = useState(priceRange.max || '');
-    const [selectedSort, setSelectedSort] = useState('asc'); // New state for sorting option
+    setSortOrder,
+}) => {
+    const [minPrice, setMinPrice] = useState(priceRange.min || "");
+    const [maxPrice, setMaxPrice] = useState(priceRange.max || "");
+    const [selectedSort, setSelectedSort] = useState("asc");
+    const navigate = useNavigate();
 
     useEffect(() => {
-        setMinPrice(priceRange.min || '');
-        setMaxPrice(priceRange.max || '');
+        setMinPrice(priceRange.min || "");
+        setMaxPrice(priceRange.max || "");
     }, [priceRange]);
 
     const formatPrice = (price) => {
         return price.toLocaleString('vi-VN');
     };
 
-    const handleTypeChange = (e) => {
-        const newType = e.target.value;
-        setSelectedType(newType);
-        onFilterChange({
-            type: newType,
-            brand: selectedBrand,
-            priceRange: { min: minPrice, max: maxPrice },
-            sortOrder: selectedSort,
-        });
-    };
-
     const handleBrandChange = (e) => {
         const newBrand = e.target.value;
         setSelectedBrand(newBrand);
         onFilterChange({
-            type: selectedType,
+            priceRange,
             brand: newBrand,
-            priceRange: { min: minPrice, max: maxPrice },
             sortOrder: selectedSort,
         });
     };
@@ -51,9 +41,8 @@ export function SearchFilter({
     const handlePriceRangeChange = () => {
         setPriceRange({ min: minPrice, max: maxPrice });
         onFilterChange({
-            type: selectedType,
-            brand: selectedBrand,
             priceRange: { min: minPrice, max: maxPrice },
+            brand: selectedBrand,
             sortOrder: selectedSort,
         });
     };
@@ -61,57 +50,42 @@ export function SearchFilter({
     const handleSortChange = (e) => {
         const sortOrder = e.target.value;
         setSelectedSort(sortOrder);
-        setSortOrder(sortOrder); // Pass sort order up to parent
+        setSortOrder(sortOrder);
         onFilterChange({
-            type: selectedType,
+            priceRange,
             brand: selectedBrand,
-            priceRange: { min: minPrice, max: maxPrice },
-            sortOrder: sortOrder,
+            sortOrder,
         });
     };
 
-    const handleMinPriceChange = (e) => {
-        const value = e.target.value;
-        setMinPrice(value);
-    };
-
-    const handleMaxPriceChange = (e) => {
-        const value = e.target.value;
-        setMaxPrice(value);
-    };
-
-    // Adjust min price with validation
     const adjustMinPrice = (amount) => {
-        let newMinPrice = (Number(minPrice) || 0) + amount;
-        if (newMinPrice < 0) newMinPrice = 0; // Prevent min price from going below 0
-        if (newMinPrice > (Number(maxPrice) || 0)) newMinPrice = Number(maxPrice) || 0; // Prevent min price from being greater than max price
-        setMinPrice(newMinPrice.toString());
+        setMinPrice((prev) => Math.max(0, parseInt(prev || 0) + amount));
     };
 
-    // Adjust max price with validation
     const adjustMaxPrice = (amount) => {
-        let newMaxPrice = (Number(maxPrice) || 0) + amount;
-        if (newMaxPrice < (Number(minPrice) || 0)) newMaxPrice = Number(minPrice) || 0; // Prevent max price from going below min price
-        setMaxPrice(newMaxPrice.toString());
+        setMaxPrice((prev) => Math.max(minPrice, parseInt(prev || 0) + amount));
+    };
+
+    const handleTypeSelect = (type) => {
+        setSelectedType(type);
+        navigate(`/collections/${type}`);
+        onFilterChange({ type, priceRange, brand: selectedBrand, sortOrder: selectedSort });
     };
 
     const clearAllFilters = () => {
-        // Reset all filter states
-        setSelectedType('');
-        setSelectedBrand('');
         setMinPrice('');
         setMaxPrice('');
+        setSelectedBrand('');
         setPriceRange({ min: '', max: '' });
-        setSelectedSort(selectedSort); // Reset sort order
 
-        // Apply the reset filter to products
+        // Notify parent to reset only price and brand filters
         onFilterChange({
-            type: '',
-            brand: '',
             priceRange: { min: '', max: '' },
-            sortOrder: '',
+            brand: '',
+            sortOrder: selectedSort,
+            type: selectedType,
         });
-    };
+    };;
 
     return (
         <div className="flex justify-center flex-wrap gap-6 mb-6 p-4 bg-white shadow-md rounded-lg">
@@ -121,10 +95,9 @@ export function SearchFilter({
                 <select
                     id="type"
                     value={selectedType}
-                    onChange={handleTypeChange}
+                    onChange={(e) => handleTypeSelect(e.target.value)}
                     className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                    <option value="">Tất cả</option>
                     {productTypes.map((type, index) => (
                         <option key={index} value={type}>{type}</option>
                     ))}
@@ -162,7 +135,7 @@ export function SearchFilter({
                         <input
                             type="text"
                             value={formatPrice(minPrice)}
-                            onChange={handleMinPriceChange}
+                            onChange={handlePriceRangeChange}
                             placeholder="Min"
                             className="p-2 w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -188,7 +161,7 @@ export function SearchFilter({
                         <input
                             type="text"
                             value={formatPrice(maxPrice)}
-                            onChange={handleMaxPriceChange}
+                            onChange={handlePriceRangeChange}
                             placeholder="Max"
                             className="w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -202,21 +175,22 @@ export function SearchFilter({
                 </div>
             </div>
 
-            {/* Sort by Price */}
+
+            {/* Sort Filter */}
             <div className="flex items-center gap-2">
-                <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo giá:</label>
+                <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo:</label>
                 <select
                     id="sort"
                     value={selectedSort}
                     onChange={handleSortChange}
                     className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                    <option value="asc">Tăng dần</option>
-                    <option value="desc">Giảm dần</option>
+                    <option value="asc">Giá tăng dần</option>
+                    <option value="desc">Giá giảm dần</option>
                 </select>
             </div>
 
-            {/* Apply Filter Button for Price Range */}
+            {/* Apply Filter Button */}
             <div className="flex items-center">
                 <button
                     onClick={handlePriceRangeChange}
@@ -236,5 +210,6 @@ export function SearchFilter({
                 </button>
             </div>
         </div>
+
     );
-}
+};

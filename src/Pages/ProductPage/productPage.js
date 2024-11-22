@@ -1,80 +1,111 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { ProductPageCollection } from "./components/productPageCollection.js";
-import { Filter } from "./components/filter.js";
-import product from "../../utils/product.json";
+import { ProductFilter } from "./components/productFilter.js";
+import { getProductByType } from "../../services/productService.js";
 
 export function ProductPage() {
     const { type } = useParams();
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-    const [nameFilter, setNameFilter] = useState('');
-    const [selectedType, setSelectedType] = useState(type);
-    const productTypes = [...new Set(product.map(({ type }) => type))];
-    const navigate = useNavigate();
+    const [productAll, setProductAll] = useState([]);
+    const productTypes = ["Bàn phím", "Tai nghe", "Chuột", "Màn hình"];
+    const [filters, setFilters] = useState({
+        type: '',
+        brand: '',
+        priceRange: { min: '', max: '' },
+        sortOrder: 'asc',
+    });
+   
+    useEffect(() => {
+        if (type) {
+            setFilters((prevFilters) => ({ ...prevFilters, type }));
+            fetchProductNeeded(type);
+        }
+    }, [type]);
 
     useEffect(() => {
-        setFilteredProducts(product);
-    }, []);
-
-    const handleFilterClick = () => {
-        let newFilteredProducts = product;
-
-        // Filter by name
-        if (nameFilter) {
-            newFilteredProducts = newFilteredProducts.filter(product =>
-                product.name.toLowerCase().includes(nameFilter.toLowerCase())
-            );
+        // Apply filters whenever productAll or filters change
+        if (productAll.length > 0) {
+            applyFilters(filters);
         }
+    }, [filters, productAll]);
 
-        // Filter by price
+    const fetchProductNeeded = async (type) => {
+        try {
+            const response = await getProductByType(type);
+            if (!response) {
+                throw new Error("Failed to fetch products.");
+            }
+            setProductAll(response);
+        } catch (error) {
+            console.error("Fetch error:", error.message);
+        }
+    };
+
+    const handleFilterChange = ({ priceRange, brand, sortOrder }) => {
+        setFilters({ ...filters, priceRange, brand, sortOrder });
+    };
+
+    const applyFilters = ({ type, priceRange, brand, sortOrder }) => {
+        let newFilteredProducts = [...productAll];
+        // Filter by type
+        if (type) {
+            newFilteredProducts = newFilteredProducts.filter((p) => p.type === type);
+        }
+        // Filter by brand
+        if (brand) {
+            newFilteredProducts = newFilteredProducts.filter((p) => p.brand === brand);
+        }
+        // Filter by price range
         const minPrice = parseFloat(priceRange.min);
         const maxPrice = parseFloat(priceRange.max);
-
         if (!isNaN(minPrice)) {
-            newFilteredProducts = newFilteredProducts.filter(product => product.price >= minPrice);
+            newFilteredProducts = newFilteredProducts.filter((p) => p.price >= minPrice);
         }
         if (!isNaN(maxPrice)) {
-            newFilteredProducts = newFilteredProducts.filter(product => product.price <= maxPrice);
+            newFilteredProducts = newFilteredProducts.filter((p) => p.price <= maxPrice);
         }
 
-        // Filter by selected type
-        if (selectedType) {
-            handleViewAllClick(selectedType);
+        // Sort products by price
+        if (sortOrder) {
+            newFilteredProducts.sort((a, b) => (sortOrder === "asc" ? a.price - b.price : b.price - a.price));
         }
 
         setFilteredProducts(newFilteredProducts);
-        console.log("Filtering with:", { nameFilter, priceRange, selectedType });
-        console.log("Filtered Products:", newFilteredProducts);
-    };
-
-    const handleViewAllClick = (type) => {
-        navigate(`/collections/${type}`);
     };
 
     const resetFilters = () => {
-        setNameFilter('');
-        setPriceRange({ min: '', max: '' });
-        setSelectedType(type);
-        setFilteredProducts(product);
+        setFilters({
+            type: '',
+            brand: '',
+            priceRange: { min: '', max: '' },
+            sortOrder: 'asc',
+        });
+        setFilteredProducts(productAll);
     };
 
+    const productBrands = Array.from(new Set(productAll.map((p) => p.brand)));
+
     return (
-        <div className="flex flex-col w-4/5 mx-auto border border-gray-300">
-            <div className="flex justify-center items-center border-b border-gray-300 w-full sticky top-0 bg-white z-50 h-20">
-                <Filter
-                    nameFilter={nameFilter}
-                    setNameFilter={setNameFilter}
-                    priceRange={priceRange}
-                    setPriceRange={setPriceRange}
-                    onFilterClick={handleFilterClick}
-                    onResetFilters={resetFilters}
-                    productTypes={productTypes}
-                    selectedType={selectedType}
-                    setSelectedType={setSelectedType}
-                />
-            </div>
-            <ProductPageCollection type={type} products={filteredProducts} />
+        <div className="my-6 max-w-7xl">
+            {/* Filter Section */}
+            <ProductFilter
+                priceRange={filters.priceRange}
+                setPriceRange={(newPriceRange) => setFilters({ ...filters, priceRange: newPriceRange })}
+                selectedType={filters.type}
+                setSelectedType={(newType) => setFilters({ ...filters, type: newType })}
+                selectedBrand={filters.brand}
+                setSelectedBrand={(newBrand) => setFilters({ ...filters, brand: newBrand })}
+                productTypes={productTypes}
+                productBrands={productBrands}
+                selectedSort={filters.sortOrder}
+                setSortOrder={(newSortOrder) => setFilters({ ...filters, sortOrder: newSortOrder })}
+                onFilterChange={handleFilterChange}
+                onResetFilters={resetFilters}
+            />
+
+            {/* Product Collection Section */}
+            <ProductPageCollection type={filters.type} products={filteredProducts} />
         </div>
     );
 }
