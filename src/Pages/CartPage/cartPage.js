@@ -83,14 +83,14 @@ export const CartPage = () => {
 
     return (
         <div className="max-w-3xl mx-auto p-6 font-sans">
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Giỏ hàng</h1>
+            <h1 className="text-2xl font-bold text-red-600 mb-4 text-center">Giỏ hàng</h1>
 
             <div className="bg-white shadow rounded-lg p-4">
                 {products.map((item) => (
                 
                 <div
                 key={item.id}
-                className="flex items-center justify-between mb-4 border-b pb-4"
+                className="flex items-center  mb-4 border-b pb-4 relative"
             >
                 <input
                     type="checkbox"
@@ -98,7 +98,7 @@ export const CartPage = () => {
                     checked={selectedProducts.includes(item._id)}
                     onChange={() => toggleProductSelection(item._id)}
                 />
-                <div className="flex items-start">
+                <div className="flex items-center ">
                     <div className="flex flex-col items-center mr-4">
                         <img
                             src={item.imageUrl || "https://via.placeholder.com/80"}
@@ -131,7 +131,7 @@ export const CartPage = () => {
             </p>
                     </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 absolute right-0">
                     <button
                         onClick={() => updateQuantity(item._id, -1)}
                         className="w-8 h-8 bg-gray-200 rounded text-lg font-bold text-gray-700 flex items-center justify-center"
@@ -162,7 +162,10 @@ export const CartPage = () => {
                         selectedProducts.length > 0
                             ? "bg-red-600 text-white hover:bg-red-700"
                             : "bg-gray-400 text-gray-700 cursor-not-allowed"
-                    }`}
+                        }`}
+                    onClick={(()=>{
+                        alert("Tiếp tục")
+                    })}
                 >
                     ĐẶT HÀNG NGAY
                 </button>
