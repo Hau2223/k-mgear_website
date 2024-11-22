@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import product from "../../utils/product.json";
 import { FaStar } from 'react-icons/fa';
-import axios from "axios";
+
 import { createCart } from "../../services/cartService";
+import { getProductById } from "../../services/productService";
 export function ProductDetailPage() {
     return <ProductDetailPageBody />;
 }
@@ -13,8 +13,20 @@ export function ProductDetailPageBody() {
     const [productData, setProductData] = useState(null);  // Default to null
     const userID = "6730551bf07941a1390ee637";
     useEffect(() => {
-        const productDetails = product.find((item) => item._id === id);
-        setProductData(productDetails);
+        const fetchProductData = async () => {
+            try {
+                const response = await getProductById(id);
+                if (!response) {
+                    throw new Error('Network response was not ok');
+                } else {
+                    setProductData(response);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+            }
+        };
+        
+        fetchProductData();
     }, [id]);
 
     const handleBuyNow = (product) => {
@@ -33,7 +45,7 @@ export function ProductDetailPageBody() {
     };
 
     const formatPrice = (price) => {
-        return price?.toLocaleString('vi-VN') + ' VNĐ'; 
+        return price ? price.toLocaleString('vi-VN') + ' VNĐ' : "N/A"; 
     };
 
     // Wait until the productData is loaded before rendering the component
@@ -49,7 +61,7 @@ export function ProductDetailPageBody() {
                     <img
                         src={productData?.imageUrl || "/path/to/fallback-image.jpg"}
                         alt={productData?.name}
-                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain transform hover:scale-105 transition-transform duration-300"
                     />
                 </div>
             </div>
@@ -98,7 +110,7 @@ export function ProductDetailPageBody() {
                 <div className="flex flex-wrap gap-4">
                     <button
                         className="px-6 py-3 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors duration-300"
-                        onClick={() => handleBuyNow(productData?._id)}
+                        onClick={() => handleBuyNow(productData)}
                     >
                         Mua Ngay
                     </button>
