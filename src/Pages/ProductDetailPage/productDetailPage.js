@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import product from "../../utils/product.json";
 import { FaStar } from 'react-icons/fa';
 import axios from "axios";
+import { createCart } from "../../services/cartService";
 export function ProductDetailPage() {
     return <ProductDetailPageBody />;
 }
@@ -10,7 +11,7 @@ export function ProductDetailPage() {
 export function ProductDetailPageBody() {
     const { id } = useParams();
     const [productData, setProductData] = useState(null);  // Default to null
-
+    const userID = "6730551bf07941a1390ee637";
     useEffect(() => {
         const productDetails = product.find((item) => item._id === id);
         setProductData(productDetails);
@@ -21,25 +22,14 @@ export function ProductDetailPageBody() {
         console.log("Buying product:", product);
     };
 
-    const handleAddToCart = (productID) => {
-        const now = new Date();
-        const formattedDateTime = now.toLocaleString();
-        axios.get(`http://localhost:8000/api/cart/create`,
-            {
-                idUser: '6730551bf07941a1390ee637',     
-                idProduct: productID, 
-                amount: 1,            
-                status: 'cart'
-            }
-        )
-            .then(response => {
-                console.log(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            }
-        );
-        alert("Item added to cart!");
+    const handleAddToCart = async (productID) => {
+        const response = await createCart({
+            idUser: userID, 
+            idProduct: id, 
+            amount: 1, 
+            status: "cart"
+        })
+        alert(response.message);
     };
 
     const formatPrice = (price) => {

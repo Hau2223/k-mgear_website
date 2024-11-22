@@ -19,7 +19,6 @@ app.post('/create', async (req, res)  => {
             res.status(200).json({ message: 'Cart created successfully!' });
         })
         .catch(err => {
-            console.log('Error creating cart:', err);
             res.status(404).json({ message: 'Error creating cart' });
         });
 });
@@ -52,7 +51,7 @@ app.get('/getByIdUserStatus/:idUser/:status', async (req, res) => {
         const { idUser, status } = req.params;
         const carts = await Cart.find({ idUser: idUser, status: status });     
         if (!carts || carts.length === 0) {
-            return res.status(404).json({ message: 'No carts found for this user' });
+            return res.status(200).json([]);
         }
         res.status(200).json(carts);
     } catch (error) {
@@ -66,9 +65,9 @@ app.delete('/delete/:id', async (req, res) => {
         const { id } = req.params;
         const deletedProduct = await Cart.findByIdAndDelete(id);
         if (!deletedProduct) {
-            return res.status(404).json({ message: 'Product not found' });
+            return res.status(404).json({ message: 'Cart not found' });
         }
-        res.status(200).json({ message: 'Product deleted successfully!', status: 200 });
+        res.status(200).json({ message: 'Cart deleted successfully!', status: 200 });
     } catch (error) {
         console.error('Error deleting product:', error);
         res.status(500).json({ message: 'Internal server error' });
