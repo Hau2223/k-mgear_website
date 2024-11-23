@@ -2,22 +2,30 @@ import React, { useState, useEffect } from "react";
 import { getCartByIdUserStatus, deleteCart } from "../../services/cartService";
 import { getProductById } from "../../services/productService";
 import { useNavigate } from "react-router-dom";
+
+import { useLoadScript, Autocomplete } from "@react-google-maps/api";
+
+const libraries = ["places"];
 export const CartPage = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const userID = "6730551bf07941a1390ee637";
+    const userID = null;
     const [carts, setCarts] = useState([]);
     // Load cart data on component mount
     useEffect(() => {
         const loadCarts = async () => {
             try {
-                const cartData = await getCartByIdUserStatus({
-                    idUser: userID,
-                    status: "cart",
-                });
-                setCarts(cartData)
-                
+                var cartData = []
+                if(userID == null){
+                    cartData = JSON.parse(localStorage.getItem("productIDs"))
+                }else{
+                    cartData = await getCartByIdUserStatus({
+                        idUser: userID,
+                        status: "cart",
+                    });
+                    setCarts(cartData)
+                }
                 const productData = await Promise.all(
                     cartData.map(async (cart) => {
                         const product = await getProductById(cart.idProduct);
@@ -48,17 +56,12 @@ export const CartPage = () => {
 
     // Update product quantity
     const updateQuantity = (id, amount) => {
-        // Log the current products array before modification
-        console.log("Products before update:", id);
     
         setProducts((prevItems) =>
             prevItems.map((item) => {
-                // Log each product to ensure correct handling
-                console.log("Checking item:", item);
     
                 if (item._id === id) {
                     const updatedItem = { ...item, quantity: Math.max(1, item.quantity + amount) };
-                    console.log("Updating item:", updatedItem); // Log the updated item
                     return updatedItem;
                 }
                 return item; // Return unmodified items
@@ -164,7 +167,7 @@ export const CartPage = () => {
                             : "bg-gray-400 text-gray-700 cursor-not-allowed"
                         }`}
                     onClick={(()=>{
-                        alert("Tiếp tục")
+                        navigate(`/cartInfo`)
                     })}
                 >
                     ĐẶT HÀNG NGAY
@@ -173,3 +176,142 @@ export const CartPage = () => {
         </div>
     );
 };
+
+
+
+
+
+export function CartInfoPage() {
+  const [autocomplete, setAutocomplete] = useState(null);
+  const [address, setAddress] = useState("");
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: "YOUR_GOOGLE_API_KEY", // Replace with your API key
+    libraries,
+  });
+
+  const handlePlaceSelected = () => {
+    const place = autocomplete.getPlace();
+    if (place) {
+      setAddress(place.formatted_address || "");
+    }
+  };
+
+  if (loadError) return <div>Error loading Google Maps</div>;
+  if (!isLoaded) return <div>Loading...</div>;
+
+  return (
+    <div className="max-w-3xl mx-auto p-6">
+      {/* Header Steps */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center">
+          <div className="flex-1 text-center">
+            <span className="text-red-500 font-bold">Giỏ hàng</span>
+          </div>
+          <div className="flex-1 text-center">
+            <span className="text-red-500 font-bold">Thông tin đặt hàng</span>
+          </div>
+          <div className="flex-1 text-center">
+            <span className="text-gray-400">Thanh toán</span>
+          </div>
+          <div className="flex-1 text-center">
+            <span className="text-gray-400">Hoàn tất</span>
+          </div>
+        </div>
+        <div className="mt-2 border-t border-gray-300"></div>
+      </div>
+
+      {/* Customer Info */}
+      <form className="space-y-6">
+        <div>
+          <h2 className="text-lg font-semibold mb-4">Thông tin khách mua hàng</h2>
+          <div className="flex items-center space-x-4 mb-4">
+            <label>
+              <input type="radio" name="gender" value="Anh" className="mr-2" />
+              Anh
+            </label>
+            <label>
+              <input type="radio" name="gender" value="Chị" className="mr-2" />
+              Chị
+            </label>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="Nhập họ tên"
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-red-300"
+            />
+            <input
+              type="text"
+              placeholder="Nhập số điện thoại"
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-red-300"
+            />
+          </div>
+        </div>
+
+        {/* Delivery Info */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4">Chọn cách nhận hàng</h2>
+          <div className="mb-4">
+            <label>
+              <input
+                type="radio"
+                name="delivery"
+                defaultChecked
+                className="mr-2"
+              />
+              Giao hàng tận nơi
+            </label>
+          </div>
+
+          {/* Google Autocomplete for Address */}
+          <div className="mb-4">
+            <Autocomplete
+              onLoad={(auto) => setAutocomplete(auto)}
+              onPlaceChanged={handlePlaceSelected}
+            >
+              <input
+                type="text"
+                placeholder="Nhập địa chỉ (Google Autocomplete)"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-red-300"
+              />
+            </Autocomplete>
+          </div>
+
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Địa chỉ cụ thể (Số nhà, tên đường)"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-red-300"
+          />
+
+          <textarea
+            placeholder="Lưu ý, yêu cầu khác (Không bắt buộc)"
+            className="w-full border rounded px-3 py-2 mt-4 focus:outline-none focus:ring focus:ring-red-300"
+          ></textarea>
+          <div className="mt-4">
+            <label>
+              <input type="checkbox" className="mr-2" />
+              Xuất hóa đơn cho đơn hàng
+            </label>
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="text-right mt-6">
+          <p className="text-lg">
+            Tổng tiền: <span className="font-bold text-red-500">3.380.000đ</span>
+          </p>
+          <button
+            type="submit"
+            className="mt-4 px-6 py-2 bg-red-500 text-white font-semibold rounded hover:bg-red-600"
+          >
+            ĐẶT HÀNG NGAY
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+

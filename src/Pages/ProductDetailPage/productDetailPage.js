@@ -11,7 +11,7 @@ export function ProductDetailPage() {
 export function ProductDetailPageBody() {
     const { id } = useParams();
     const [productData, setProductData] = useState(null);  // Default to null
-    const userID = "6730551bf07941a1390ee637";
+    const userID = null;
     useEffect(() => {
         const fetchProductData = async () => {
             try {
@@ -34,15 +34,21 @@ export function ProductDetailPageBody() {
     };
 
     const handleAddToCart = async () => {
-        
-        if(!userID){
-            const newCart = {
+        // localStorage.removeItem("productIDs")
+        if(userID == null){
+            const newProductID = {
                 idProduct: id, 
-                amount: 1, 
-                status: "cart"
             }
-            const savedData = JSON.parse(localStorage.getItem("carts"));
-            localStorage.setItem("carts", JSON.stringify([...savedData,newCart]));
+            const savedData = JSON.parse(localStorage.getItem("productIDs"));
+            if(!savedData){
+                localStorage.setItem("productIDs",JSON.stringify([newProductID]))
+                return
+            }
+            if(savedData.find((data)=>data.id === newProductID.idProduct)){
+                localStorage.setItem("productIDs", JSON.stringify(savedData));
+                return
+            }
+            localStorage.setItem("productIDs", JSON.stringify([...savedData,newProductID]));
             return
         }
         const newCart = {
