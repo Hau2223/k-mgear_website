@@ -155,7 +155,7 @@ export function SearchFilter({
                     <div className="flex items-center border border-gray-300 rounded">
                         <button
                             onClick={() => adjustMinPrice(-500000)}
-                            className="p-3 bg-gray-300 text-black rounded-l hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            className="p-3 bg-gray-300 text-black rounded-l "
                         >
                             <FaMinus className="w-5 h-5" />
                         </button>
@@ -164,11 +164,11 @@ export function SearchFilter({
                             value={formatPrice(minPrice)}
                             onChange={handleMinPriceChange}
                             placeholder="Min"
-                            className="p-2 w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="p-2 w-36 text-center border-0 "
                         />
                         <button
                             onClick={() => adjustMinPrice(500000)}
-                            className="p-3 bg-gray-300 text-black rounded-r hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            className="p-3 bg-gray-300 text-black rounded-r"
                         >
                             <FaPlus className="w-5 h-5" />
                         </button>
@@ -181,7 +181,7 @@ export function SearchFilter({
                     <div className="flex items-center border border-gray-300 rounded">
                         <button
                             onClick={() => adjustMaxPrice(-500000)}
-                            className="p-3 bg-gray-300 text-black rounded-l hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            className="p-3 bg-gray-300 text-black rounded-l "
                         >
                             <FaMinus className="w-5 h-5" />
                         </button>
@@ -190,11 +190,11 @@ export function SearchFilter({
                             value={formatPrice(maxPrice)}
                             onChange={handleMaxPriceChange}
                             placeholder="Max"
-                            className="w-36 text-center border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="p-2 w-36 text-center "
                         />
                         <button
                             onClick={() => adjustMaxPrice(500000)}
-                            className="p-3 bg-gray-300 text-black rounded-r hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            className="p-3 bg-gray-300 text-black rounded-r "
                         >
                             <FaPlus className="w-5 h-5" />
                         </button>
