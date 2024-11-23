@@ -30,17 +30,28 @@ export function ProductDetailPageBody() {
     }, [id]);
 
     const handleBuyNow = (product) => {
-        alert("Buying product: " + product);
         console.log("Buying product:", product);
     };
 
-    const handleAddToCart = async (productID) => {
-        const response = await createCart({
+    const handleAddToCart = async () => {
+        
+        if(!userID){
+            const newCart = {
+                idProduct: id, 
+                amount: 1, 
+                status: "cart"
+            }
+            const savedData = JSON.parse(localStorage.getItem("carts"));
+            localStorage.setItem("carts", JSON.stringify([...savedData,newCart]));
+            return
+        }
+        const newCart = {
             idUser: userID, 
             idProduct: id, 
             amount: 1, 
             status: "cart"
-        })
+        }
+        const response = await createCart(newCart)
         alert(response.message);
     };
 

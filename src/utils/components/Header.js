@@ -13,6 +13,11 @@ const Cart = ({ }) => {
     const userID = "6730551bf07941a1390ee637";
 
     const loadCarts = async () => {
+        if(!userID){
+            //local
+            // localStorage.setItem("carts", JSON.stringify(myObject));
+            return
+        }
         const cartData = await getCartByIdUserStatus({
             idUser: userID,
             status: "cart",
