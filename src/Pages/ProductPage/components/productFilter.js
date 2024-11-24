@@ -143,8 +143,8 @@ export const ProductFilter = ({
                             <FaMinus className="w-5 h-5" />
                         </button>
                         <input
-                            type="text"
-                            value={formatPrice(minPrice)}
+                            type="number"
+                            value={minPrice}
                             onChange={handleMinPriceChange}
                             placeholder="Min"
                             className="p-2 w-36 text-center"
@@ -169,8 +169,8 @@ export const ProductFilter = ({
                             <FaMinus className="w-5 h-5" />
                         </button>
                         <input
-                            type="text"
-                            value={formatPrice(maxPrice)}
+                            type="number"
+                            value={maxPrice}
                             onChange={handleMaxPriceChange}
                             placeholder="Max"
                             className="p-2 w-36 text-center"
