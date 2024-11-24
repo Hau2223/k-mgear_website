@@ -22,10 +22,6 @@ export function SearchFilter({
         setMaxPrice(priceRange.max || '');
     }, [priceRange]);
 
-    const formatPrice = (price) => {
-        return price.toLocaleString('vi-VN');
-    };
-
     const handleTypeChange = (e) => {
         const newType = e.target.value;
         setSelectedType(newType);
@@ -161,9 +157,9 @@ export function SearchFilter({
                         </button>
                         <input
                             type="text"
-                            value={formatPrice(minPrice)}
+                            value={minPrice}
                             onChange={handleMinPriceChange}
-                            placeholder="Min"
+                            placeholder={minPrice}
                             className="p-2 w-36 text-center border-0 "
                         />
                         <button
@@ -187,7 +183,7 @@ export function SearchFilter({
                         </button>
                         <input
                             type="text"
-                            value={formatPrice(maxPrice)}
+                            value={maxPrice}
                             onChange={handleMaxPriceChange}
                             placeholder="Max"
                             className="p-2 w-36 text-center "
