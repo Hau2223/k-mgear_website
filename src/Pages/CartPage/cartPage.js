@@ -3,14 +3,46 @@ import { getCartByIdUserStatus, deleteCart } from "../../services/cartService";
 import { getProductById } from "../../services/productService";
 import { useNavigate } from "react-router-dom";
 
-// import { useLoadScript, Autocomplete } from "@react-google-maps/api";
-
-const libraries = ["places"];
-export const CartPage = () => {
+var indexSection = 0 
+const userID = null;
+export function CartPage () {
+    // useEffect(()=>{
+    //     localStorage.removeItem("productIDs")
+    // },[])
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+      {/* Header Steps */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center">
+          <div className="flex-1 text-center">
+            <span className="text-red-500 font-bold">Giỏ hàng</span>
+          </div>
+          <div className="flex-1 text-center">
+            <span className="text-red-500 font-bold">Thông tin đặt hàng</span>
+          </div>
+          <div className="flex-1 text-center">
+            <span className="text-gray-400">Thanh toán</span>
+          </div>
+          <div className="flex-1 text-center">
+            <span className="text-gray-400">Hoàn tất</span>
+          </div>
+        </div>
+        <div className="mt-2 border-t border-gray-300"></div>
+      </div>
+      {
+      indexSection === 0 ? <CartCollection/>:
+      indexSection === 1 ? <CartInfo/>:
+      indexSection === 2 ? <CartCollection/>:
+      indexSection === 3 ? <CartCollection/>:<></>
+      }
+    </div>
+    )
+};
+function CartCollection(){
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const userID = null;
+    
     const [carts, setCarts] = useState([]);
     // Load cart data on component mount
     useEffect(() => {
@@ -84,8 +116,8 @@ export const CartPage = () => {
         .filter((item) => selectedProducts.includes(item._id))
         .reduce((total, item) => total + (item.price - (item.price*item.discount/100)) * item.quantity, 0);
 
-    return (
-        <div className="max-w-3xl mx-auto p-6 font-sans">
+  return(
+    <div className="max-w-3xl mx-auto p-6 font-sans">
             <h1 className="text-2xl font-bold text-red-600 mb-4 text-center">Giỏ hàng</h1>
 
             <div className="bg-white shadow rounded-lg p-4">
@@ -167,7 +199,7 @@ export const CartPage = () => {
                             : "bg-gray-400 text-gray-700 cursor-not-allowed"
                         }`}
                     onClick={(()=>{
-                        navigate(`/cartInfo`)
+                        indexSection++
                     })}
                 >
                     ĐẶT HÀNG NGAY
@@ -175,9 +207,8 @@ export const CartPage = () => {
             </div>
         </div>
     );
-};
-
-export function CartInfoPage() {
+}
+function CartInfo() {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -290,28 +321,7 @@ export function CartInfoPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      {/* Header Steps */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center">
-          <div className="flex-1 text-center">
-            <span className="text-red-500 font-bold">Giỏ hàng</span>
-          </div>
-          <div className="flex-1 text-center">
-            <span className="text-red-500 font-bold">Thông tin đặt hàng</span>
-          </div>
-          <div className="flex-1 text-center">
-            <span className="text-gray-400">Thanh toán</span>
-          </div>
-          <div className="flex-1 text-center">
-            <span className="text-gray-400">Hoàn tất</span>
-          </div>
-        </div>
-        <div className="mt-2 border-t border-gray-300"></div>
-      </div>
-
-      {/* Customer Info */}
-      <form className="space-y-6">
+    <form className="space-y-6">
         <div>
           <h2 className="text-lg font-semibold mb-4">Thông tin khách mua hàng</h2>
           <div className="flex items-center space-x-4 mb-4">
@@ -442,18 +452,17 @@ export function CartInfoPage() {
             className="w-full border rounded px-3 py-2 mt-4 focus:outline-none focus:ring focus:ring-red-300"
           ></textarea>
 
-          <div className="mt-4">
+          {/* <div className="mt-4">
             <label>
               <input type="checkbox" className="mr-2" />
               Tôi đồng ý với các điều khoản
             </label>
-          </div>
+          </div> */}
 
           <div className="mt-6">
-            <button className="w-full bg-blue-500 text-white py-2 rounded" type="submit">Đặt hàng</button>
+            <div className="w-full bg-blue-500 text-white py-2 rounded text-center cursor-pointer select-none" onClick={()=>{}}>Đặt hàng</div>
           </div>
         </div>
       </form>
-    </div>
   );
 }
