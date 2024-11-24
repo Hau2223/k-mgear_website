@@ -15,11 +15,12 @@ export function ProductPage() {
         priceRange: { min: '', max: '' },
         sortOrder: 'asc',
     });
-   
+    const productBrands = Array.from(new Set(productAll.map((p) => p.brand)));
+
     useEffect(() => {
         if (type) {
-            setFilters((prevFilters) => ({ ...prevFilters, type }));
             fetchProductNeeded(type);
+            resetFilters()
         }
     }, [type]);
 
@@ -52,6 +53,7 @@ export function ProductPage() {
         if (type) {
             newFilteredProducts = newFilteredProducts.filter((p) => p.type === type);
         }
+
         // Filter by brand
         if (brand) {
             newFilteredProducts = newFilteredProducts.filter((p) => p.brand === brand);
@@ -65,12 +67,10 @@ export function ProductPage() {
         if (!isNaN(maxPrice)) {
             newFilteredProducts = newFilteredProducts.filter((p) => p.price <= maxPrice);
         }
-
         // Sort products by price
         if (sortOrder) {
             newFilteredProducts.sort((a, b) => (sortOrder === "asc" ? a.price - b.price : b.price - a.price));
         }
-
         setFilteredProducts(newFilteredProducts);
     };
 
@@ -84,7 +84,7 @@ export function ProductPage() {
         setFilteredProducts(productAll);
     };
 
-    const productBrands = Array.from(new Set(productAll.map((p) => p.brand)));
+
 
     return (
         <div className="my-6 max-w-7xl">
