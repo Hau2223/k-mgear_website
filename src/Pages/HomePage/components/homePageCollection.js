@@ -1,10 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import product from "../../../utils/product.json";
 import { Card } from "../../../utils/components/Card.js";
+import { getProductByType } from "../../../services/productService.js";
 
 export function HomePageCollection({ type }) {
+    const [productAll, setProductAll] = useState([]);
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        const fetchProductNeeded = async (type) => {
+            try {
+                const response = await getProductByType(type);
+                if (!response) {
+                    throw new Error("Failed to fetch products.");
+                }
+                setProductAll(response);
+            } catch (error) {
+                console.error("Fetch error:", error.message);
+            }
+        };
+        fetchProductNeeded(type)
+    },);
 
     const handleCardClick = (itemId) => {
         navigate(`/product/${itemId}`);
@@ -31,7 +47,7 @@ export function HomePageCollection({ type }) {
 
             {/* Cards Section */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
-                {product
+                {productAll
                     .filter((item) => item?.type === type)
                     .slice(0, 4)
                     .map((item, index) => (
