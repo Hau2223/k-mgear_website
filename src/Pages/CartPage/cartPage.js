@@ -3,7 +3,7 @@ import { getCartByIdUserStatus, deleteCart } from "../../services/cartService";
 import { getProductById } from "../../services/productService";
 import { useNavigate } from "react-router-dom";
 
-import { useLoadScript, Autocomplete } from "@react-google-maps/api";
+// import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 
 const libraries = ["places"];
 export const CartPage = () => {
@@ -180,25 +180,39 @@ export const CartPage = () => {
 
 
 
-
 export function CartInfoPage() {
-  const [autocomplete, setAutocomplete] = useState(null);
   const [address, setAddress] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "YOUR_GOOGLE_API_KEY", // Replace with your API key
-    libraries,
-  });
-
-  const handlePlaceSelected = () => {
-    const place = autocomplete.getPlace();
-    if (place) {
-      setAddress(place.formatted_address || "");
+  // Mock vAPI address suggestion function
+  const fetchAddressSuggestions = async (query) => {
+    if (!query) {
+      setSuggestions([]);
+      return;
     }
+
+    // Simulate API call to vAPI
+    const mockData = [
+      "123 Main Street, Hanoi",
+      "456 Elm Avenue, Ho Chi Minh City",
+      "789 Oak Lane, Da Nang",
+    ].filter((addr) => addr.toLowerCase().includes(query.toLowerCase()));
+
+    setSuggestions(mockData);
   };
 
-  if (loadError) return <div>Error loading Google Maps</div>;
-  if (!isLoaded) return <div>Loading...</div>;
+  const handleAddressChange = (e) => {
+    const value = e.target.value;
+    setAddress(value);
+    fetchAddressSuggestions(value);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSelectedAddress(suggestion);
+    setAddress(suggestion);
+    setSuggestions([]);
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -264,27 +278,30 @@ export function CartInfoPage() {
             </label>
           </div>
 
-          {/* Google Autocomplete for Address */}
-          <div className="mb-4">
-            <Autocomplete
-              onLoad={(auto) => setAutocomplete(auto)}
-              onPlaceChanged={handlePlaceSelected}
-            >
-              <input
-                type="text"
-                placeholder="Nhập địa chỉ (Google Autocomplete)"
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-red-300"
-              />
-            </Autocomplete>
+          {/* Address Input */}
+          <div className="mb-4 relative">
+            <input
+              type="text"
+              value={address}
+              onChange={handleAddressChange}
+              placeholder="Nhập địa chỉ (vAPI Autocomplete)"
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-red-300"
+            />
+            {/* Suggestions Dropdown */}
+            {suggestions.length > 0 && (
+              <ul className="absolute bg-white border rounded shadow mt-1 w-full max-h-40 overflow-y-auto z-10">
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Địa chỉ cụ thể (Số nhà, tên đường)"
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-red-300"
-          />
 
           <textarea
             placeholder="Lưu ý, yêu cầu khác (Không bắt buộc)"
