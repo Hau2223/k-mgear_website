@@ -15,6 +15,7 @@ export function HomePageBody() {
       <HomePageCollection type="Bàn phím" />
       <HomePageCollection type="Chuột" />
       <HomePageCollection type="Màn hình" />
+      <HomePageCollection type="Tai nghe" />
     </div>
   );
 }
