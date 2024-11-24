@@ -24,10 +24,6 @@ export const ProductFilter = ({
         setMaxPrice(priceRange.max || "");
     }, [priceRange]);
 
-    const formatPrice = (price) => {
-        return price.toLocaleString('vi-VN');
-    };
-
     const handleBrandChange = (e) => {
         const newBrand = e.target.value;
         setSelectedBrand(newBrand);
@@ -144,7 +140,7 @@ export const ProductFilter = ({
                         </button>
                         <input
                             type="text"
-                            value={formatPrice(minPrice)}
+                            value={minPrice}
                             onChange={handleMinPriceChange}
                             placeholder="Min"
                             className="p-2 w-36 text-center"
@@ -170,7 +166,7 @@ export const ProductFilter = ({
                         </button>
                         <input
                             type="text"
-                            value={formatPrice(maxPrice)}
+                            value={maxPrice}
                             onChange={handleMaxPriceChange}
                             placeholder="Max"
                             className="p-2 w-36 text-center"

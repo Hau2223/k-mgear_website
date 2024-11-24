@@ -105,7 +105,7 @@ export function ProductPage() {
             />
 
             {/* Product Collection Section */}
-            <ProductPageCollection type={filters.type} products={filteredProducts} />
+            <ProductPageCollection products={filteredProducts} />
         </div>
     );
 }

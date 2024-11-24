@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card } from "../../../utils/components/Card.js";
 
-export function ProductPageCollection({ type, products }) {
+export function ProductPageCollection({ products }) {
     const navigate = useNavigate();
     const [visibleProduct, setvisibleProduct] = useState(10);
 
