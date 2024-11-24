@@ -10,9 +10,23 @@ const Cart = ({ }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [carts, setCarts] = useState([]);
     const [products, setProducts] = useState([]);
-    const userID = "6730551bf07941a1390ee637";
+    const userID = null;
+    // "6730551bf07941a1390ee637"
 
     const loadCarts = async () => {
+        if(userID == null){
+            //local
+            const localProducts = JSON.parse(localStorage.getItem("productIDs"));
+            if(!localProducts){
+                setProducts([]);
+                return 
+            }
+            const productData = await Promise.all(
+                localProducts.map(async (product) => await getProductById(product.idProduct))
+            );
+            setProducts(productData);
+            return
+        }
         const cartData = await getCartByIdUserStatus({
             idUser: userID,
             status: "cart",

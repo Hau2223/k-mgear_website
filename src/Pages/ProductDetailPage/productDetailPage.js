@@ -11,7 +11,7 @@ export function ProductDetailPage() {
 export function ProductDetailPageBody() {
     const { id } = useParams();
     const [productData, setProductData] = useState(null);  // Default to null
-    const userID = "6730551bf07941a1390ee637";
+    const userID = null;
     useEffect(() => {
         const fetchProductData = async () => {
             try {
@@ -30,17 +30,34 @@ export function ProductDetailPageBody() {
     }, [id]);
 
     const handleBuyNow = (product) => {
-        alert("Buying product: " + product);
         console.log("Buying product:", product);
     };
 
-    const handleAddToCart = async (productID) => {
-        const response = await createCart({
+    const handleAddToCart = async () => {
+        // localStorage.removeItem("productIDs")
+        if(userID == null){
+            const newProductID = {
+                idProduct: id, 
+            }
+            const savedData = JSON.parse(localStorage.getItem("productIDs"));
+            if(!savedData){
+                localStorage.setItem("productIDs",JSON.stringify([newProductID]))
+                return
+            }
+            if(savedData.find((data)=>data.id === newProductID.idProduct)){
+                localStorage.setItem("productIDs", JSON.stringify(savedData));
+                return
+            }
+            localStorage.setItem("productIDs", JSON.stringify([...savedData,newProductID]));
+            return
+        }
+        const newCart = {
             idUser: userID, 
             idProduct: id, 
             amount: 1, 
             status: "cart"
-        })
+        }
+        const response = await createCart(newCart)
         alert(response.message);
     };
 
