@@ -156,11 +156,11 @@ export function SearchFilter({
                             <FaMinus className="w-5 h-5" />
                         </button>
                         <input
-                            type="text"
+                            type="number"
                             value={minPrice}
                             onChange={handleMinPriceChange}
-                            placeholder={minPrice}
-                            className="p-2 w-36 text-center border-0 "
+                            placeholder="Min"
+                            className="p-2 w-36 text-center focus:outline-none"
                         />
                         <button
                             onClick={() => adjustMinPrice(500000)}
@@ -182,11 +182,11 @@ export function SearchFilter({
                             <FaMinus className="w-5 h-5" />
                         </button>
                         <input
-                            type="text"
+                            type="number"
                             value={maxPrice}
                             onChange={handleMaxPriceChange}
                             placeholder="Max"
-                            className="p-2 w-36 text-center "
+                            className="p-2 w-36 text-center focus:outline-none"
                         />
                         <button
                             onClick={() => adjustMaxPrice(500000)}
@@ -231,6 +231,27 @@ export function SearchFilter({
                     Đặt lại
                 </button>
             </div>
+
+            {/*remove spin */}
+            <style>
+                {`
+                    input[type="number"] {
+                        appearance: none;
+                        -moz-appearance: textfield;
+                        -webkit-appearance: none;
+                    }
+
+                    input[type="number"]::-webkit-outer-spin-button,
+                    input[type="number"]::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                    }
+                `}
+            </style>
         </div>
+
     );
 }
+
+
+
