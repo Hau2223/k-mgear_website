@@ -22,17 +22,18 @@ app.post('/create', async (req, res)  => {
             res.status(404).json({ message: 'Error creating cart' });
         });
 });
-app.put('/update/:id', async (req, res) => {
+app.put('/updateByIdUserStatus', async (req, res) => {
     try {
-        const { id } = req.params;
-        const updateData = req.body; 
-        const updatedProduct = await Cart.findByIdAndUpdate(id, updateData, { new: true });
-        if (!updatedProduct) {
-            return res.status(404).json({ message: 'Product not found' });
+        const data = req.body; 
+        
+        const updatedCart = await Cart.findOneAndUpdate({idUser: data.idUser,idProduct: data.idProduct ,status: data.oldStatus},{status: data.newStatus,amount: data.amount})
+        console.log(updatedCart);
+        if (!updatedCart) {
+            return res.status(404).json({ message: 'Cart not found' });
         }
-        res.status(200).json({ message: 'Product updated successfully!', status: 200, product: updatedProduct,});
+        res.status(200).json({ message: 'Cart updated successfully!', status: 200, product: updatedCart,});
     } catch (error) {
-        console.error('Error updating product:', error);
+        console.error('Error updating Cart:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

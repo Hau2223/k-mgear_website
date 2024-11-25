@@ -12,12 +12,13 @@ export const createCart = async (params) => {
     });
 }
 
-export const updateCart = async (params, id) => {
-    return await put(`/cart/update/${id}`, {
+export const updateByIdUserStatus = async (params) => {
+    return await put(`/cart/updateByIdUserStatus`, {
         idUser: params.idUser, 
         idProduct: params.idProduct, 
         amount: params.amount, 
-        status: params.status
+        oldStatus: params.oldStatus,
+        newStatus: params.newStatus
     });
 }
 
