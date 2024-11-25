@@ -25,7 +25,7 @@ mongoose.connect(
   const productTypeRou = require("./routers/productTypeRouter");
   const commentRou = require("./routers/commentRouter");
   
-  app.use(cors({ origin: 'http://localhost:3000' }));
+  app.use(cors());
   app.use('/api/user', userRou);
   app.use('/api/product', productRou);
   app.use('/api/cart', cartRou);
