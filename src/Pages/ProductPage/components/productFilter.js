@@ -24,10 +24,6 @@ export const ProductFilter = ({
         setMaxPrice(priceRange.max || "");
     }, [priceRange]);
 
-    const formatPrice = (price) => {
-        return price.toLocaleString('vi-VN');
-    };
-
     const handleBrandChange = (e) => {
         const newBrand = e.target.value;
         setSelectedBrand(newBrand);
@@ -147,7 +143,7 @@ export const ProductFilter = ({
                             value={minPrice}
                             onChange={handleMinPriceChange}
                             placeholder="Min"
-                            className="p-2 w-36 text-center"
+                            className="p-2 w-36 text-center focus:outline-none"
                         />
                         <button
                             onClick={() => adjustMinPrice(500000)}
@@ -173,7 +169,7 @@ export const ProductFilter = ({
                             value={maxPrice}
                             onChange={handleMaxPriceChange}
                             placeholder="Max"
-                            className="p-2 w-36 text-center"
+                            className="p-2 w-36 text-center focus:outline-none"
                         />
                         <button
                             onClick={() => adjustMaxPrice(500000)}
@@ -219,6 +215,22 @@ export const ProductFilter = ({
                     Đặt lại
                 </button>
             </div>
+
+            {/*remove spin */}
+            <style>
+                {`
+                    input[type="number"] {
+                        appearance: none;
+                        -moz-appearance: textfield;
+                        -webkit-appearance: none;
+                    }
+
+                    input[type="number"]::-webkit-outer-spin-button,
+                    input[type="number"]::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                    }
+                `}
+            </style>
         </div>
 
     );
