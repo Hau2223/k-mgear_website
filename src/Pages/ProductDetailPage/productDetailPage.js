@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaStar } from 'react-icons/fa';
-
 import { createCart } from "../../services/cartService";
 import { getProductById } from "../../services/productService";
-import { FrameRate } from "./rateDetailPage";
+import { FrameRate } from "./components/rateDetailPage.js";
+
 export function ProductDetailPage() {
-    return <><ProductDetailPageBody /><FrameRate></FrameRate></>;
+    return <>
+        <ProductDetailPageBody/>
+        <FrameRate/>
+        <></>
+    </>;
 }
 
 export function ProductDetailPageBody() {
     const { id } = useParams();
-    const [productData, setProductData] = useState(null);  // Default to null
+    const [productData, setProductData] = useState(null); 
     const userID = null;
     useEffect(() => {
         const fetchProductData = async () => {
@@ -26,8 +30,8 @@ export function ProductDetailPageBody() {
                 console.error('Fetch error:', error.message);
             }
         };
-        
         fetchProductData();
+
     }, [id]);
 
     const handleBuyNow = (product) => {

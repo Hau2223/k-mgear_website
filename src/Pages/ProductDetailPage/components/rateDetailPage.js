@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { getProductById } from "../../services/productService";
-import { getAllCommentByID } from "../../services/commentService.js";
+import { getProductById } from "../../../services/productService.js";
+import { getAllCommentByID } from "../../../services/commentService.js";
 
 export function FrameRate() {
   const { id } = useParams();
-  const [productData, setProductData] = useState([]); // Default to null
+  const [productData, setProductData] = useState([]); 
   const [commentDataByID, setCommentDataByID] = useState([]);
   useEffect(() => {
     const fetchProductData = async () => {
