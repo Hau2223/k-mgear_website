@@ -8,7 +8,7 @@ export function Card({ item }) {
     };
 
     return (
-        <div className="card cursor-pointer transform transition-transform duration-200 hover:scale-105 bg-white shadow-lg rounded-lg p-4 w-72 h-[350px] flex flex-col">
+        <div className="card cursor-pointer border bg-white transform transition-transform duration-200 hover:scale-105 shadow-lg rounded-lg p-4 w-72 h-[350px] flex flex-col">
             <div className="h-[170px] w-full overflow-hidden rounded-lg mb-3">
                 <img
                     src={item?.imageUrl ? item.imageUrl : IMAGES.PART}
