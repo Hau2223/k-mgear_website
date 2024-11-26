@@ -55,7 +55,7 @@ app.delete('/delete/:id', async (req, res) => {
 // Get all products
 app.get('/getAll', async (req, res) => {
     try {
-        const products = await Product.find();
+        const products = await Product.find({ quantity: { $gt: 0 } });
         res.status(200).json(products);
     } catch (error) {
         console.error('Error fetching products:', error); 
@@ -78,7 +78,7 @@ app.get('/getById/:id', async (req, res) => {
 app.get('/getByType/:type', async (req, res) => {
     try {
         const { type } = req.params;
-        const product = await Product.find({type});        
+        const product = await Product.find({type, quantity: { $gt: 0 }});        
         res.status(200).json(product);
     } catch (error) {
         console.error('Error fetching product:', error); 
