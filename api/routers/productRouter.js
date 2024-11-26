@@ -8,8 +8,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // Create a new product
 app.post('/create', (req, res) => {
-    const { name, type, price, discount, quantity, brand, description, rating, sold, imageUrl } = req.body;
-    const newProduct = new Product({ name, type, price, discount, quantity, brand, description, rating, sold, imageUrl });
+    const { name, type, price, discount, quantity, brand, description, rating, sold, imageUrl, totalReviews } = req.body;
+    const newProduct = new Product({ name, type, price, discount, quantity, brand, description, rating, sold, imageUrl, totalReviews });
     newProduct
         .save()
         .then(() => {

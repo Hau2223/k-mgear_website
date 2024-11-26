@@ -115,10 +115,7 @@ export function ProductDetailPageBody() {
                         <p>
                             Hãng: <strong className="text-blue-500">{productData?.brand}</strong>
                         </p>
-                        <p className="flex items-center !text-yellow-500 font-semibold">
-                            {productData?.rating} <FaStar className="ml-1" />
-                            <span className="text-teal-400 ml-1"> ({productData?.totalReviews} đánh giá)</span>
-                        </p>
+                        
                         <p>
                             Đã bán:{" "}
                             <strong className="text-orange-500">{productData?.sold}</strong>

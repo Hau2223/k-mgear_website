@@ -4,10 +4,13 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-// Create a new cart
+
+
+
 app.post('/create', (req, res) => {
-    const { idUser, idProduct, comment, rating } = req.body;
-    const newComment = new Comment({ idUser, idProduct, comment, rating });
+    const { idUser, idProduct, comment, rating, nameUser } = req.body;
+    const newComment = new Comment({ idUser, idProduct, comment, rating,nameUser });
+    console.log('hahaha'+newComment);
     newComment
         .save()
         .then(() => {
@@ -32,4 +35,37 @@ app.get('/getAllProductId/:idProduct', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+app.put('/update/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updates = req.body;
+        const updatedComment = await Comment.findByIdAndUpdate(id, updates, { new: true });
+        if (!updatedComment) {
+            return res.status(404).json({ message: 'No comment found for this ID' });
+        }
+        res.status(200).json({ message: 'Comment updated successfully!', status: 200, data: updatedComment });
+    } catch (error) {
+        console.error('Error updating comment:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.delete('/delete/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedComment = await Comment.findByIdAndDelete(id);
+        if (!deletedComment) {
+            return res.status(404).json({ message: 'No comment found for this ID' });
+        }
+        res.status(200).json({ message: 'Comment deleted successfully!', status: 200, data: deletedComment });
+    } catch (error) {
+        console.error('Error deleting comment:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
+
+
 module.exports = app;
