@@ -45,6 +45,10 @@ export const getProductById = async (id) => {
     return await get(`/product/getById/${id}`);
 }
 
+export const getProductByTerm = async (term) => {
+    return await get(`/product/getByTerm/${term}`);
+}
+
 export const getProductByType = async (type) => {
     return await get(`/product/getByType/${type}`);
 }

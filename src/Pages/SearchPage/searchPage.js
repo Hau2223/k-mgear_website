@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SearchFilter } from './components/searchFilter.js';
 import { SearchPageCollection } from './components/searchCollection.js';
 import { useParams } from 'react-router-dom';
-import { getAll } from "../../services/productService";
+import { getProductByTerm } from "../../services/productService";
 
 export function SearchPage() {
     const { searchTerm } = useParams();
@@ -21,7 +21,7 @@ export function SearchPage() {
     useEffect(() => {
         const fetchProductData = async () => {
             try {
-                const response = await getAll();
+                const response = await getProductByTerm(searchTerm);
                 if (response) {
                     setProductData(response);
                 } else {
@@ -34,67 +34,46 @@ export function SearchPage() {
         fetchProductData();
     }, [searchTerm]);
 
-    // Apply filters and sorting when filters, searchTerm, or sortOrder change
+    // Apply filters when filters or sortOrder change
     useEffect(() => {
         if (productData) {
             let productsToFilter = productData;
-
-            // Apply searchTerm filter if it exists
-            if (searchTerm) {
+            // Apply filters
+            if (filters.type) {
+                productsToFilter = productsToFilter.filter((product) => product.type === filters.type);
+            }
+            if (filters.brand) {
+                productsToFilter = productsToFilter.filter((product) => product.brand === filters.brand);
+            }
+            if (filters.priceRange.min || filters.priceRange.max) {
                 productsToFilter = productsToFilter.filter(
                     (product) =>
-                        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+                        (filters.priceRange.min === '' || product.price >= filters.priceRange.min) &&
+                        (filters.priceRange.max === '' || product.price <= filters.priceRange.max)
                 );
             }
-
-            // Set the available types based on filtered products
-            const types = [...new Set(productsToFilter.map(product => product.type))];
-
-            // Reset the brand filter when type is changed
-            if (filters.type) {
-                // Set the available brands based on the selected type
-                const brands = [...new Set(productsToFilter.filter(product => product.type === filters.type).map(product => product.brand))];
-                setProductBrands(brands);
-            } else {
-                // If no type is selected, show all brands
-                const allBrands = [...new Set(productsToFilter.map(product => product.brand))];
-                setProductBrands(allBrands);
+            // Apply sorting
+            if (sortOrder === 'asc') {
+                productsToFilter = productsToFilter.sort((a, b) => a.price - b.price);
+            } else if (sortOrder === 'desc') {
+                productsToFilter = productsToFilter.sort((a, b) => b.price - a.price);
             }
+
+            // Set filtered products
+            setFilteredProducts(productsToFilter);
+        }
+    }, [filters, sortOrder, productData]);
+
+    // Update available types and brands when product data changes
+    useEffect(() => {
+        if (productData) {
+            const types = [...new Set(productData.map(product => product.type))];
             setProductTypes(types);
-            // Apply other filters and sorting
-            filterProducts(productsToFilter);
-        }
-    }, [filters, searchTerm, sortOrder, productData]);
 
-    // Function to filter products based on filters
-    const filterProducts = (products) => {
-        let filtered = [...products]; // Create a copy to avoid mutating the original
-
-        // Apply additional filters (type, brand)
-        if (filters.type) {
-            filtered = filtered.filter((product) => product.type === filters.type);
+            const brands = [...new Set(productData.map(product => product.brand))];
+            setProductBrands(brands);
         }
-        if (filters.brand) {
-            filtered = filtered.filter((product) => product.brand === filters.brand);
-        }
-        // Apply price range filter
-        if (filters.priceRange.min || filters.priceRange.max) {
-            filtered = filtered.filter(
-                (product) =>
-                    (filters.priceRange.min === '' || product.price >= filters.priceRange.min) &&
-                    (filters.priceRange.max === '' || product.price <= filters.priceRange.max)
-            );
-        }
-        // Apply sorting if sortOrder is set
-        if (sortOrder === 'asc') {
-            filtered = filtered.sort((a, b) => a.price - b.price);
-        } else if (sortOrder === 'desc') {
-            filtered = filtered.sort((a, b) => b.price - a.price);
-        }
-
-        setFilteredProducts(filtered);
-    };
+    }, [productData]);
 
     // Function to handle filter changes
     const handleFilterChange = (newFilters) => {
@@ -103,7 +82,7 @@ export function SearchPage() {
 
     // Function to handle sort changes
     const handleSortChange = (newSortOrder) => {
-        setSortOrder(newSortOrder); // Update sort order
+        setSortOrder(newSortOrder);
     };
 
     return (
@@ -125,7 +104,7 @@ export function SearchPage() {
                 selectedBrand={filters.brand}
                 setSelectedBrand={(brand) => setFilters({ ...filters, brand })}
                 productTypes={productTypes}
-                productBrands={productBrands} 
+                productBrands={productBrands}
                 onFilterChange={handleFilterChange}
                 setSortOrder={handleSortChange}
             />

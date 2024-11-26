@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { FaSearch, FaHeadset, FaMapMarkerAlt, FaCamera, FaShoppingCart, FaNewspaper, FaBook, FaCoins, FaShieldAlt } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
-import product from "../../utils/product.json";
 import { getCartByIdUserStatus } from "../../services/cartService";
 import { getAll, getProductById } from "../../services/productService.js";
 const Cart = ({ }) => {
