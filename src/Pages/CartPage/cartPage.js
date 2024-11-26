@@ -8,7 +8,6 @@ export function CartPage() {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
-
     const [carts, setCarts] = useState([]);
     // Load cart data on component mount
     useEffect(() => {
@@ -27,14 +26,16 @@ export function CartPage() {
                 const productData = await Promise.all(
                     cartData.map(async (cart) => {
                         const product = await getProductById(cart.idProduct);
-                        return {
-                            ...product,
-                            quantity: cart.quantity || 1, // Ensure quantity is set
-                        };
+                        if (product.quantity > 0) {
+                            return {
+                                ...product,
+                                quantity: 1,
+                            };
+                        }
+                        return null; 
                     })
                 );
-
-                setProducts(productData);
+                setProducts(productData.filter((product) => product !== null));
             } catch (error) {
                 console.error("Error loading cart data:", error);
             }
@@ -46,7 +47,7 @@ export function CartPage() {
     // Toggle product selection
     const toggleProductSelection = (id) => {
         setSelectedProducts((prevSelected) =>
-            prevSelected.includes(id)
+            prevSelected.includes(id) || products.find(e=>e.quantity === 0)
                 ? prevSelected.filter((productId) => productId !== id)
                 : [...prevSelected, id]
         );
@@ -64,7 +65,7 @@ export function CartPage() {
                     }
                     const updatedItem = {
                         ...item,
-                        quantity: Math.max(1, max),
+                        quantity: Math.max(0, max),
                     };
                     return updatedItem;
                 }
@@ -99,10 +100,12 @@ export function CartPage() {
         );
     function handleSubmit(){
         const selectedPro = products.filter((product)=> selectedProducts.includes(product._id))
+        // selectedPro.filter(pro=>pro.quantity === 0)
         localStorage.setItem("selectedProducts",JSON.stringify(selectedPro));
         navigate("/cartInfo");
     }
     return (
+        
         <div className="max-w-3xl mx-auto p-6 font-sans">
             <div className="bg-white shadow rounded-lg p-4 border">
                 <h1 className="text-2xl font-bold text-red-600 mb-4 text-center">
@@ -185,9 +188,12 @@ export function CartPage() {
                     ĐẶT HÀNG NGAY
                 </button>
             </div>
+           
         </div>
     );
 }
+
+
 export function CartInfoPage() {
     const navigate = useNavigate();
     const [provinces, setProvinces] = useState([]);
@@ -563,7 +569,7 @@ export const CartConfirmation = () => {
                     type: selectedProduct.type,
                     price: selectedProduct.price,
                     discount: selectedProduct.discount,
-                    quantity: product.amount - selectedProduct.quantity,
+                    quantity: product.quantity - selectedProduct.quantity,
                     brand: selectedProduct.brand,
                     description: selectedProduct.description,
                     rating: selectedProduct.rating,
@@ -579,7 +585,22 @@ export const CartConfirmation = () => {
                     amount: selectedProduct.quantity, 
                     status: "purchased"
                 })
+                const product =  await getProductById(selectedProduct._id);
+                
+                await updateProduct({
+                    name: selectedProduct.name,
+                    type: selectedProduct.type,
+                    price: selectedProduct.price,
+                    discount: selectedProduct.discount,
+                    quantity: product.quantity - selectedProduct.quantity,
+                    brand: selectedProduct.brand,
+                    description: selectedProduct.description,
+                    rating: selectedProduct.rating,
+                    sold: product.sold+selectedProduct.quantity,
+                    imageUrl: selectedProduct.imageUrl,
+                }, selectedProduct._id)
             })
+            
         }
         const proIDs = JSON.parse(localStorage.getItem("productIDs"))
         if(proIDs){
