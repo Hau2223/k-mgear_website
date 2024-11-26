@@ -2,42 +2,17 @@ import React, { useEffect, useState, useRef } from "react";
 import { FaSearch, FaHeadset, FaMapMarkerAlt, FaCamera, FaShoppingCart, FaNewspaper, FaBook, FaCoins, FaShieldAlt } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
+import product from "../../utils/product.json";
+import cart from "../../utils/cart.json";
 import { getCartByIdUserStatus } from "../../services/cartService";
 import { getAll, getProductById } from "../../services/productService.js";
+
+
 const Cart = ({ }) => {
     const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(false);
     const [carts, setCarts] = useState([]);
     const [products, setProducts] = useState([]);
-    const userID = localStorage.getItem("userID")
-
-    const loadCarts = async () => {
-        if (userID == null) {
-            //local
-            const localProducts = JSON.parse(localStorage.getItem("productIDs"));
-            if (!localProducts) {
-                setProducts([]);
-                return
-            }
-            const productData = await Promise.all(
-                localProducts.map(async (product) => await getProductById(product.idProduct))
-            );
-            setProducts(productData);
-            return
-        }
-        const cartData = await getCartByIdUserStatus({
-            idUser: userID,
-            status: "cart",
-        });
-
-        setCarts(cartData);
-        const productData = await Promise.all(
-            carts.map(async (cart) => await getProductById(cart.idProduct))
-        );
-        setProducts(productData);
-        console.log(products);
-
-    };
 
     useEffect(() => {
         if (isHovered) {
@@ -102,7 +77,11 @@ const Cart = ({ }) => {
 export function Header() {
     const [productData, setProductData] = useState([]);
     const navigate = useNavigate();
-
+    const [productAll, setProductAll] = useState([]);
+    useEffect(() => {
+        fetchAllProduct();
+    }, []);    
+    
     useEffect(() => {
         fetchAllProduct();
     }, []);
