@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaStar } from 'react-icons/fa';
-import { createCart } from "../../services/cartService";
-import { getProductById } from "../../services/productService";
+import { createCart } from "../../services/cartService.js";
+import { getProductById } from "../../services/productService.js";
 import { FrameRate } from "./components/rateDetailPage.js";
 
 export function ProductDetailPage() {

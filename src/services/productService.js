@@ -30,6 +30,7 @@ export const updateProduct = async (params, id) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
+        totalReviews : params.totalReviews
     });
 }
 
