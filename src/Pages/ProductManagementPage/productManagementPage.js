@@ -55,9 +55,6 @@ export function ProductManagement() {
     typeImage: "",
   });
 
-  // console.log(data.name, "type", data.type, "price", data.price,"discount",
-  //   data.discount, "quantity", data.quantity, "imageUrl", data.imageUrl);
-
   useEffect(() => {
     fetchAllProduct();
   }, [location.pathname]);
@@ -153,12 +150,12 @@ export function ProductManagement() {
             brand: "",
             typeImage: "",
           });
-          alert("Add product successfully!!!");
+          alert("Thêm sản phẩm thành công!!!");
         }
       } catch (err) {
         console.error("Add product failed!", err);
         alert(
-          "Error adding product: " + err.response?.data?.message || err.message
+          "thêm sản phẩm lỗi: " + err.response?.data?.message || err.message
         );
       }
     },
@@ -179,9 +176,9 @@ export function ProductManagement() {
         if (res?.status === 200) {
           setIsModalOpenUpdate(false);
           await fetchAllProduct();
-          await togglePopup(null);
-          console.log("Update product successfully!!!");
-          alert("Thống Báo:\nCập nhật sản phẩm thành công");
+          await setActivePopup(null);
+
+          alert("Thông Báo:\nCập nhật sản phẩm thành công");
         }
       } catch (err) {
         console.error("Updated product failed!", err);
@@ -202,9 +199,9 @@ export function ProductManagement() {
       if (res?.status === 200) {
         setIsModalOpenUpdate(false);
         await fetchAllProduct();
-        await togglePopup(null);
-        console.log("Delete product successfully!!!");
-        alert("Thống Báo:\nX sản phẩm thành công");
+        await setActivePopup(null);
+        // console.log("Delete product successfully!!!");
+        alert("Thông Báo:\nXóa sản phẩm thành công");
       }
     } catch (err) {
       console.error("Deleted product failed!", err);
@@ -221,6 +218,9 @@ export function ProductManagement() {
 
   const togglePopup = (productId) => {
     setActivePopup(activePopup === productId ? null : productId);
+    setIsDropdownTypeOpen(false);
+    setIsDropdownVisible(false);
+    setIsDropdownBrandOpen(false);
   };
 
   const handleTextChange = (type, text) => {
@@ -387,6 +387,7 @@ export function ProductManagement() {
               setIsDropdownTypeOpen(!isDropdownTypeOpen);
               setIsDropdownVisible(false);
               setIsDropdownBrandOpen(false);
+              setActivePopup(null);
             }}
           >
             {filter.type || "Loại Sản phẩm"}
@@ -425,8 +426,9 @@ export function ProductManagement() {
             className="flex items-center justify-center gap-1 p-2 border border-teal-500 rounded cursor-pointer min-w-26 hover:bg-gray-200 text-black font-medium"
             onClick={() => {
               setIsDropdownBrandOpen(!isDropdownBrandOpen);
-              setIsDropdownTypeOpen(false); 
+              setIsDropdownTypeOpen(false);
               setIsDropdownVisible(false);
+              setActivePopup(null);
             }}
           >
             {filter.brand || "Hãng"}
@@ -440,7 +442,7 @@ export function ProductManagement() {
                     ? "border border-teal-400 rounded"
                     : "hover:border hover:border-teal-400 hover:rounded"
                 }`}
-                onClick={() => handleBrandFilterChange("")} 
+                onClick={() => handleBrandFilterChange("")}
               >
                 Tất cả
               </div>
@@ -467,7 +469,8 @@ export function ProductManagement() {
             onClick={() => {
               setIsDropdownVisible(!isDropdownVisible);
               setIsDropdownTypeOpen(false);
-              setIsDropdownBrandOpen(false)
+              setIsDropdownBrandOpen(false);
+              setActivePopup(null);
             }} // Hiện/ẩn dropdown
           >
             Giá
@@ -705,7 +708,10 @@ export function ProductManagement() {
                 <button
                   type="button"
                   className="px-4 py-2 bg-gray-300 rounded"
-                  onClick={() => setIsModalOpen(false)} // Đóng modal
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setActivePopup(null);
+                  }} // Đóng modal
                 >
                   Hủy
                 </button>
@@ -846,7 +852,10 @@ export function ProductManagement() {
                 <button
                   type="button"
                   className="px-4 py-2 bg-gray-300 rounded"
-                  onClick={() => setIsModalOpenUpdate(false)} // Đóng modal
+                  onClick={() => {
+                    setIsModalOpenUpdate(false);
+                    setActivePopup(null);
+                  }} // Đóng modal
                 >
                   Hủy
                 </button>
