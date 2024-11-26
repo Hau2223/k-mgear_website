@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { getProductById, updateProduct } from "../../../services/productService.js";
+import { getProductById, updateRating } from "../../../services/productService";
 import {
   getAllCommentByID,
   createComment,
@@ -9,7 +9,6 @@ import {
 } from "../../../services/commentService.js";
 import { FaTrashAlt } from "react-icons/fa";
 import { GrTestDesktop } from "react-icons/gr";
-
 
 export function FrameRate() {
   const { id } = useParams();
@@ -32,7 +31,7 @@ export function FrameRate() {
     // fetchComentData();
   }, [id]);
 
-  console.log("00", id);
+
 
   useEffect(() => {
     if (productData) {
@@ -69,7 +68,7 @@ export function FrameRate() {
     (r1 / ttRate) * 100,
   ];
 
-  console.log("tt", ratePercentss);
+
 
   const averageRate =
     (parseFloat(ratePercentss[0]) * 5 +
@@ -120,68 +119,88 @@ export function FrameRate() {
   const totalRate = commentDataByID.length;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const idProduct = id;
-    const idUser = "6730551bf07941a1390ee637";
+  const idProduct = id;
+  const idUser = "6730551bf07941a1390ee637";
 
-    if (!idUser) return;
-    const newComment = {
-      idUser: idUser,
-      idProduct: idProduct,
-      comment: comment,
-      rating: rating,
-      nameUser: name,
-    };
+  if (!idUser) return;
 
-    try {
-      const response = await createComment(newComment);
-
-      if (response?.status === 200) {
-        console.log("Comment created successfully:", response.data);
-
-        setCommentDataByID((prevComments) => [
-          ...prevComments,
-          {
-            ...newComment,
-            datetime: new Date().toISOString(),
-          },
-        ]);
-
-        const totalRatingValue = commentDataByID.length + 1;
-          
-        const updateResponse = await updateProduct(
-          {
-            rating: averageRate.toFixed(1),
-            totalReviews: totalRatingValue,
-          },
-          idProduct
-        );
-
-        if (updateResponse?.status === 200) {
-          console.log("Product updated successfully:", updateResponse.data);
-
-          setProductData((prevData) => ({
-            ...prevData,
-            rating: averageRate,
-          }));
-        }
-      } else {
-        throw new Error(response.message || "Unknown error");
-      }
-    } catch (error) {
-      console.error(
-        "Error creating comment or updating product:",
-        error.message
-      );
-    }
-
-    setShowForm(false);
-    setName("");
-    setPhone("");
-    setComment("");
-    setRating(0);
+  const newComment = {
+    idUser: idUser,
+    idProduct: idProduct,
+    comment: comment,
+    rating: rating,
+    nameUser: name,
   };
+
+  try {
+    const response = await createComment(newComment);
+
+    if (response?.status === 200) {
+      console.log("Comment created successfully:", response.data);
+
+      // Cập nhật danh sách bình luận trước
+      await fetchComentData(); // Hoặc cập nhật commentDataByID thủ công
+
+      // Tính toán lại giá trị đánh giá trung bình và cập nhật sản phẩm
+      const updatedR1 = commentDataByID.filter((item) => item.rating === 1).length;
+      const updatedR2 = commentDataByID.filter((item) => item.rating === 2).length;
+      const updatedR3 = commentDataByID.filter((item) => item.rating === 3).length;
+      const updatedR4 = commentDataByID.filter((item) => item.rating === 4).length;
+      const updatedR5 = commentDataByID.filter((item) => item.rating === 5).length;
+      const updatedTtRate = updatedR1 + updatedR2 + updatedR3 + updatedR4 + updatedR5;
+
+      const updatedRatePercentss = [
+        (updatedR5 / updatedTtRate) * 100,
+        (updatedR4 / updatedTtRate) * 100,
+        (updatedR3 / updatedTtRate) * 100,
+        (updatedR2 / updatedTtRate) * 100,
+        (updatedR1 / updatedTtRate) * 100,
+      ];
+
+      const updatedAverageRate =
+        (parseFloat(updatedRatePercentss[0]) * 5 +
+          parseFloat(updatedRatePercentss[1]) * 4 +
+          parseFloat(updatedRatePercentss[2]) * 3 +
+          parseFloat(updatedRatePercentss[3]) * 2) /
+        100;
+
+      const updatedAverageRateOn5Scale = updatedAverageRate
+        ? parseFloat(updatedAverageRate).toFixed(1)
+        : "0";
+
+      const updateResponse = await updateRating(
+        {
+          rating: updatedAverageRateOn5Scale,
+          totalReviews: commentDataByID.length,
+        },
+        idProduct
+      );
+
+      if (updateResponse?.status === 200) {
+        console.log("Product updated successfully:", updateResponse.data);
+        await fetchComentData(); // Lấy lại dữ liệu mới
+      }
+    } else {
+      throw new Error(response.message || "Unknown error");
+    }
+  } catch (error) {
+    console.error("Error creating comment or updating product:", error.message);
+  }
+
+  setShowForm(false);
+  setName("");
+  setPhone("");
+  setComment("");
+  setRating(0);
+};
+
+
+  console.log("121221", commentDataByID.length);
+  console.log("", averageRateOn5Scale );
+  
+  
 
   const handleDeleteComment = async (commentId) => {
     try {
@@ -258,13 +277,15 @@ export function FrameRate() {
           </span>
         </div>
         {ratePercentss.map((percent, index) => {
-          const validPercent = percent ?? 0;
-          <RateItem
-            key={index}
-            rateNum={5 - index}
-            size={{ width: validPercent }}
-            ratePercent={percent}
-          />;
+          const validPercent = !isNaN(percent) && percent !== undefined ? percent : 0;
+          return (
+            <RateItem
+              key={index}
+              rateNum={5 - index}
+              size={{ width: `${validPercent}%` }}
+              ratePercent={validPercent.toFixed(0)+'%'}
+            />
+          );
         })}
         {showForm && (
           <div

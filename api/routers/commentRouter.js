@@ -8,8 +8,7 @@ app.use(bodyParser.json());
 
 
 app.post('/create', (req, res) => {
-    const { idUser, idProduct, comment, rating, nameUser } = req.body;
-    const newComment = new Comment({ idUser, idProduct, comment, rating,nameUser });
+    const newComment = new Comment(req.body);
     console.log('hahaha'+newComment);
     newComment
         .save()

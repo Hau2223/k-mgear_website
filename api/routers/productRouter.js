@@ -29,7 +29,22 @@ app.put('/update/:id', async (req, res) => {
         if (!updatedProduct) {
             return res.status(404).json({ message: 'Product not found' });
         }
-        res.status(200).json({ message: 'Product updated successfully!', status: 200, product: updatedProduct, });
+        res.status(200).json({ message: 'Product updated successfully!', status: 200, data: updatedProduct, });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.put('/updateRating/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedProductRating = req.body;
+        const updatedProduct = await Product.findByIdAndUpdate(id, updatedProductRating, { new: true });
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.status(200).json({ message: 'Product updated successfully!', status: 200, data: updatedProduct, });
     } catch (error) {
         console.error('Error updating product:', error);
         res.status(500).json({ message: 'Internal server error' });

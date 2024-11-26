@@ -1,28 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaStar } from 'react-icons/fa';
 import { createCart } from "../../services/cartService.js";
 import { getProductById } from "../../services/productService.js";
 import { FrameRate } from "./components/rateDetailPage.js";
 
+
+
 export function ProductDetailPage() {
+    const [productData, setProductData] = useState(null);  // Default to null
+const { id } = useParams();
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
+    const refreshProductData = async () => {
+        try {
+            const response = await getProductById(id);
+            if (!response) {
+                throw new Error('Network response was not ok');
+            } else {
+                setProductData(response);
+            }
+        } catch (error) {
+            console.error('Fetch error:', error.message);
+        }
+    };
+
+    useEffect(() => {
+        refreshProductData();
+    }, [id]);
     return <>
-        <ProductDetailPageBody />
-        <FrameRate />
+        <ProductDetailPageBody productData={productData} />
+        <FrameRate refreshProductData={refreshProductData}/>
         <></>
     </>;
 }
 
 export function ProductDetailPageBody() {
-    const { id } = useParams();
     const [productData, setProductData] = useState(null);  // Default to null
+    const { id } = useParams();
+
     const userID = localStorage.getItem("userID");
 
 
-    useEffect(() => {
+    useEffect(useCallback(() => {
         const fetchProductData = async () => {
             try {
                 const response = await getProductById(id);
@@ -37,7 +58,7 @@ export function ProductDetailPageBody() {
         };
         fetchProductData();
 
-    }, [id]);
+    }, [id]));
 
     const handleAddToCart = async () => {
         // localStorage.removeItem("productIDs")

@@ -34,6 +34,13 @@ export const updateProduct = async (params, id) => {
     });
 }
 
+export const updateRating = async (params, id) => {
+    return await put(`/product/updateRating/${id}`, {
+        rating: params.rating,
+        totalReviews : params.totalReviews
+    });
+}
+
 export const deleteProduct = async (id) => {
     return await del(`/product/delete/${id}`);
 }
