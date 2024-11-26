@@ -15,8 +15,8 @@ export function ProductDetailPage() {
 
 export function ProductDetailPageBody() {
     const { id } = useParams();
-    const [productData, setProductData] = useState(null); 
-    const userID = null;
+    const [productData, setProductData] = useState(null);  // Default to null
+    const userID = localStorage.getItem("userID");
     useEffect(() => {
         const fetchProductData = async () => {
             try {
@@ -34,10 +34,6 @@ export function ProductDetailPageBody() {
 
     }, [id]);
 
-    const handleBuyNow = (product) => {
-        console.log("Buying product:", product);
-    };
-
     const handleAddToCart = async () => {
         // localStorage.removeItem("productIDs")
         if(userID == null){
@@ -45,25 +41,33 @@ export function ProductDetailPageBody() {
                 idProduct: id, 
             }
             const savedData = JSON.parse(localStorage.getItem("productIDs"));
+            
             if(!savedData){
                 localStorage.setItem("productIDs",JSON.stringify([newProductID]))
                 return
             }
-            if(savedData.find((data)=>data.id === newProductID.idProduct)){
-                localStorage.setItem("productIDs", JSON.stringify(savedData));
-                return
+            savedData.map(async(data, index)=> {
+                if(data.idProduct === newProductID.idProduct){
+                    await localStorage.setItem("productIDs", JSON.stringify(savedData));
+                    return
+                }
+                if(index === savedData.length-1){
+                    localStorage.setItem("productIDs", JSON.stringify([...savedData,newProductID]));
+                    return
+                }
+            })
+            
+        }else{
+            const newCart = {
+                idUser: userID, 
+                idProduct: id, 
+                amount: 1, 
+                status: "cart"
             }
-            localStorage.setItem("productIDs", JSON.stringify([...savedData,newProductID]));
-            return
+            const response = await createCart(newCart)
+            alert(response.message);
         }
-        const newCart = {
-            idUser: userID, 
-            idProduct: id, 
-            amount: 1, 
-            status: "cart"
-        }
-        const response = await createCart(newCart)
-        alert(response.message);
+        
     };
 
     const formatPrice = (price) => {
@@ -129,19 +133,12 @@ export function ProductDetailPageBody() {
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-4">
-                        <button
-                            className="px-6 py-3 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors duration-300"
-                            onClick={() => handleBuyNow(productData)}
-                        >
-                            Mua Ngay
-                        </button>
-                        <button
-                            className="px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors duration-300"
-                            onClick={() => handleAddToCart(productData?._id)}>
-                            Thêm vào giỏ hàng
-                        </button>
-                    </div>
+                <div className="flex flex-wrap gap-4">
+                    <button
+                        className="px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors duration-300"
+                        onClick={() => handleAddToCart(productData?._id)}>
+                        Thêm vào giỏ hàng
+                    </button>
                 </div>
                 
             </div>

@@ -10,8 +10,7 @@ const Cart = ({ }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [carts, setCarts] = useState([]);
     const [products, setProducts] = useState([]);
-    const userID = null;
-    // "6730551bf07941a1390ee637"
+    const userID = localStorage.getItem("userID")
 
     const loadCarts = async () => {
         if (userID == null) {
@@ -37,6 +36,8 @@ const Cart = ({ }) => {
             carts.map(async (cart) => await getProductById(cart.idProduct))
         );
         setProducts(productData);
+        console.log(products);
+        
     };
 
     useEffect(() => {
