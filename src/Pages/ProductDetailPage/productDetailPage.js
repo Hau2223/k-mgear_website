@@ -140,7 +140,7 @@ export function ProductDetailPageBody() {
                         Thêm vào giỏ hàng
                     </button>
                 </div>
-                
+                </div>
             </div>
     );
 }
