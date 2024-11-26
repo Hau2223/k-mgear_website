@@ -101,23 +101,32 @@ export function ProductDetailPageBody() {
             <div className="flex-[6] px-4">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">{productData?.name}</h1>
 
-                {/* Flash Sale Badge */}
-                <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 inline-block text-sm uppercase font-bold rounded-full mb-4 shadow-lg">
-                    Flash Sale
-                </div>
+                <div className="my-4">
+                    {productData?.discount && productData.discount > 0 ? (
+                        <>
+                            {/* Flash Sale Badge */}
+                            <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 inline-block text-sm uppercase font-bold rounded-full mb-2 shadow-lg">
+                                Flash Sale
+                            </div>
 
-                <div className="flex items-center mb-6">
-                    <span className="text-gray-500 line-through text-lg mr-4">
-                        {formatPrice(productData?.price)} VND
-                    </span>
-
-                    <span className="bg-[#fedee3] text-red-600 text-xs font-bold py-1 px-2 rounded-full ml-2">
-                        -{productData?.discount}%
-                    </span>
-
-                    <p className="!text-red-600 text-xl font-semibold ml-2">
-                        {formatPrice(productData?.price - (productData?.price * (productData?.discount / 100)))}
-                    </p>
+                            {/* Price Details */}
+                            <div className="flex items-center">
+                                <p className="!text-red-600 text-xl font-semibold mr-2">
+                                    {formatPrice(productData?.price - (productData?.price * (productData?.discount / 100)))}
+                                </p>
+                                <span className="text-gray-500 line-through text-lg mx-2">
+                                    {formatPrice(productData?.price)} VND
+                                </span>
+                                <span className="bg-[#fedee3] text-red-600 text-xs font-bold py-1 px-2 rounded-full ml-2">
+                                    -{productData?.discount}%
+                                </span>
+                            </div>
+                        </>
+                    ) : (
+                        <p className="text-red-600 text-xl font-semibold">
+                            {formatPrice(productData?.price)} VND
+                        </p>
+                    )}
                 </div>
 
                 <div className="space-y-2 text-gray-600 mb-8">
