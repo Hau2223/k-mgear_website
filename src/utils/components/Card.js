@@ -17,13 +17,23 @@ export function Card({ item }) {
                 />
             </div>
             <h2 className="text-lg font-semibold text-black-600 my-1 truncate">{item.name}</h2>
-            <p className="text-gray-500 line-through text-sm mb-1">{formatPrice(item.price)}</p>
-            <p className="!text-red-600 text-xl font-semibold mb-2">
-                {formatPrice(item.price - (item.price * (item.discount / 100)))}
-                <span className="bg-[#fedee3] text-red-600 text-xs font-bold px-2 rounded-full ml-2">
-                    -{item.discount}%
-                </span>
-            </p>
+            {item.discount && item.discount > 0 ? (
+                <>
+                    <p className="text-gray-500 line-through text-sm mb-1">
+                        {formatPrice(item.price)}
+                    </p>
+                    <p className="!text-red-600 text-xl font-semibold mb-2">
+                        {formatPrice(item.price - (item.price * (item.discount / 100)))}
+                        <span className="bg-[#fedee3] text-red-600 text-xs font-bold px-2 rounded-full ml-2">
+                            -{item.discount}%
+                        </span>
+                    </p>
+                </>
+            ) : (
+                <p className="text-red-600 text-xl font-semibold mb-2">
+                    {formatPrice(item.price)}
+                </p>
+            )}
             <div className="my-auto text-sm">
                 <p className="flex items-center !text-yellow-500 font-semibold mb-1">
                     {item.rating} <FaStar className="ml-1" />
