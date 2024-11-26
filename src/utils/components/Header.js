@@ -4,11 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
 import product from "../../utils/product.json";
 import cart from "../../utils/cart.json";
+import { getAll} from '../../services/productService';
 
-const Cart = ({ }) => {
+const Cart = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [products, setProducts] = useState([]);
-    
+
     useEffect(() => {
       const list = cart.map((cartItem) =>
         product.find((item) => item._id === cartItem.productID)
@@ -59,14 +60,30 @@ const Cart = ({ }) => {
   };
 
 
-
-
 export function Header() {
-
-
     const [productData, setProductData] = useState([]);
     const navigate = useNavigate();
+    const [productAll, setProductAll] = useState([]);
+    useEffect(() => {
+        fetchAllProduct();
+    }, []);
 
+    const fetchAllProduct = async () => {
+        try {
+            const response = await getAll();
+            if (!response) {
+                throw new Error('Network response was not ok');
+            } else {
+                setProductAll(response)
+            }
+        } catch (error) {
+            console.error('Fetch error:', error.message);
+            }
+    }
+
+    console.log("123", productAll);
+    
+    
     useEffect(() => {
         setProductData(product);
     }, []);

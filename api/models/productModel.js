@@ -19,8 +19,7 @@ const productSchema = new mongoose.Schema({
   },
   quantity: {
     type: Number,
-    required: true,
-    min: 0,
+    default: 0,
   },
   brand: {
     type: String,
@@ -38,10 +37,14 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  contentType: {
+    type: String,
+    default: "image/jpeg"
+  },
   imageUrl: {
     type: String,
-    required: true,
-  },
+    default: ""
+  }, 
   totalReviews: {
     type: Number,
     default: 0,

@@ -9,7 +9,8 @@
         "brand": "Rapoo",
         "description": "",
         "rating": 4.5,
-        "sold": 120,
+        "sold": 120,     
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/78350_ba_n_phi_m_co_day_rapoo_nk1900_mau_den_ket_noi_usb_1_9b9d65066096424b8ba33fbb5a32b850_grande.jpg",
         "totalReviews": 30
     },
@@ -24,6 +25,7 @@
         "description": "",
         "rating": 4,
         "sold": 80,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/ban-phim-co-akko-3087-rf-world-t_7d48328873544037a713b4af1b3320a4_grande.png",
         "totalReviews": 20
     },
@@ -38,6 +40,7 @@
         "description": "",
         "rating": 4.8,
         "sold": 60,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/47488_dareu_ek75_white__6__6d19968870264154b3dc98905e329f1a_grande.jpg",
         "totalReviews": 25
     },
@@ -52,6 +55,7 @@
         "description": "",
         "rating": 4.3,
         "sold": 30,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/486_375a3_07d49b25229c41cab582d583c6962096_large_32983d8a416a4b08b4e41c90a61aa4e0_grande.jpg",
         "totalReviews": 15
     },
@@ -66,6 +70,7 @@
         "description": "",
         "rating": 4.6,
         "sold": 150,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/logitech-g102-lightsync-rgb-black-1_bf4f5774229c4a0f81b8e8a2feebe4d8_aeb4ae49ee844c3e9d315883d4e482d4_grande.jpg",
         "totalReviews": 40
     },
@@ -80,6 +85,7 @@
         "description": "",
         "rating": 4.4,
         "sold": 40,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/thumbchuot-recovered_757cce0149c042149f8b58f30fcb3307_8868cbe7339a46e9813f2eb8bdb334ee_grande.png",
         "totalReviews": 35
     },
@@ -94,6 +100,7 @@
         "description": "",
         "rating": 4.7,
         "sold": 70,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/gearvn_rapoo_v280_3cca5faabe444125ac860167f54f300d_grande.png",
         "totalReviews": 50
     },
@@ -108,6 +115,7 @@
         "description": "",
         "rating": 4.9,
         "sold": 20,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/download.png_1eb1cdf82aea4fcf9344d6652dcb071d_grande.jpg",
         "totalReviews": 10
     },
@@ -122,6 +130,7 @@
         "description": "",
         "rating": 4.2,
         "sold": 180,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/lg_24gs60f-b_gearvn_d49057760de2459899aa429092fc505f_grande.jpg",
         "totalReviews": 60
     },
@@ -136,6 +145,7 @@
         "description": "",
         "rating": 4.1,
         "sold": 50,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/msi_mp251_e2_gearvn_a7b529f73a96430ab1079fab4ea58502_grande.jpg",
         "totalReviews": 10
     },
@@ -150,6 +160,7 @@
         "description": "",
         "rating": 4,
         "sold": 50,
+        "contentType": "image/jpeg",
         "imageUrl": "https://product.hstatic.net/200000722513/product/msi_mp251_e2_gearvn_a7b529f73a96430ab1079fab4ea58502_grande.jpg",
         "totalReviews": 10
     },
@@ -164,6 +175,7 @@
         "description": "",
         "rating": 4.3,
         "sold": 130,
+        "contentType": "image/jpeg",
         "imageUrl": "",
         "totalReviews": 40
     },
@@ -178,6 +190,7 @@
         "description": "",
         "rating": 4.5,
         "sold": 100,
+        "contentType": "image/jpeg",
         "imageUrl": "",
         "totalReviews": 45
     },
@@ -192,6 +205,7 @@
         "description": "",
         "rating": 4.6,
         "sold": 150,
+        "contentType": "image/jpeg",
         "imageUrl": "",
         "totalReviews": 55
     },
@@ -206,6 +220,7 @@
         "description": "",
         "rating": 4.9,
         "sold": 90,
+        "contentType": "image/jpeg",
         "imageUrl": "",
         "totalReviews": 100
     },
@@ -220,6 +235,7 @@
         "description": "",
         "rating": 4.8,
         "sold": 50,
+        "contentType": "image/jpeg",
         "imageUrl": "",
         "totalReviews": 25
     },
@@ -234,6 +250,7 @@
         "description": "",
         "rating": 4.7,
         "sold": 20,
+        "contentType": "image/jpeg",
         "imageUrl": "",
         "totalReviews": 10
     }

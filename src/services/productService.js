@@ -1,7 +1,7 @@
 import {
     get,
     post, put, del
-} from '../untils/axios';
+} from '../utils/axios';
 
 export const createProduct = async (params) => {
     return await post('/product/create', {
@@ -15,6 +15,7 @@ export const createProduct = async (params) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
+        typeImage: params.typeImage
     });
 }
 
@@ -30,6 +31,7 @@ export const updateProduct = async (params, id) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
+        typeImage: params.typeImage,
     });
 }
 
@@ -48,4 +50,3 @@ export const getProductById = async (id) => {
 export const getProductByType = async (type) => {
     return await get(`/product/getByType/${type}`);
 }
-

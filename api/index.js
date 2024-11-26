@@ -24,6 +24,7 @@ mongoose.connect(
   const productBrandRou = require("./routers/productBrandRouter")
   const productTypeRou = require("./routers/productTypeRouter");
   const commentRou = require("./routers/commentRouter");
+  const imageRou = require("./routers/imageRouter");
   
   app.use('/api/user', userRou);
   app.use('/api/product', productRou);
@@ -31,6 +32,8 @@ mongoose.connect(
   app.use('/api/brand', productBrandRou);
   app.use('/api/type', productTypeRou);
   app.use('/api/comment', commentRou);
+  app.use('/api/image', imageRou);
+
 
 app.listen(port, () => {
   console.log('Sever running on port 8000 ');
