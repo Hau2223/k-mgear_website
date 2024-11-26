@@ -15,7 +15,6 @@ export const createProduct = async (params) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
-        typeImage: params.typeImage
     });
 }
 
@@ -31,7 +30,6 @@ export const updateProduct = async (params, id) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
-        typeImage: params.typeImage,
         totalReviews : params.totalReviews
     });
 }
@@ -62,3 +60,4 @@ export const getProductByTerm = async (term) => {
 export const getProductByType = async (type) => {
     return await get(`/product/getByType/${type}`);
 }
+
