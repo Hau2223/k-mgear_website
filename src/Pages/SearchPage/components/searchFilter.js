@@ -27,7 +27,7 @@ export function SearchFilter({
         setSelectedType(newType);
         onFilterChange({
             type: newType,
-            brand: selectedBrand,
+            brand: '',
             priceRange: { min: minPrice, max: maxPrice },
             sortOrder: selectedSort,
         });
