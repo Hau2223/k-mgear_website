@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { getProductById, updateProduct } from "../../services/productService";
+import { getProductById, updateProduct } from "../../../services/productService.js";
 import {
   getAllCommentByID,
   createComment,
   deleteComment,
-} from "../../services/commentService.js";
+} from "../../../services/commentService.js";
 import { FaTrashAlt } from "react-icons/fa";
 import { GrTestDesktop } from "react-icons/gr";
 
+
 export function FrameRate() {
   const { id } = useParams();
-  const [productData, setProductData] = useState([]); // Default to null
+  const [productData, setProductData] = useState([]); 
   const [commentDataByID, setCommentDataByID] = useState([]);
   useEffect(() => {
     const fetchProductData = async () => {

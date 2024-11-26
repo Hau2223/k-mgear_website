@@ -5,11 +5,8 @@ import { useNavigate } from "react-router-dom";
 export const ProductFilter = ({
     priceRange,
     setPriceRange,
-    selectedType,
-    setSelectedType,
     selectedBrand,
     setSelectedBrand,
-    productTypes,
     productBrands,
     onFilterChange,
     setSortOrder,
@@ -17,7 +14,6 @@ export const ProductFilter = ({
     const [minPrice, setMinPrice] = useState(priceRange.min || "");
     const [maxPrice, setMaxPrice] = useState(priceRange.max || "");
     const [selectedSort, setSelectedSort] = useState("asc");
-    const navigate = useNavigate();
 
     useEffect(() => {
         setMinPrice(priceRange.min || "");
@@ -72,12 +68,6 @@ export const ProductFilter = ({
         setMaxPrice((prev) => Math.max(minPrice, parseInt(prev || 0) + amount));
     };
 
-    const handleTypeSelect = (type) => {
-        setSelectedType(type);
-        navigate(`/collections/${type}`);
-        onFilterChange({ type, priceRange, brand: selectedBrand, sortOrder: selectedSort });
-    };
-
     const clearAllFilters = () => {
         setMinPrice('');
         setMaxPrice('');
@@ -89,27 +79,11 @@ export const ProductFilter = ({
             priceRange: { min: '', max: '' },
             brand: '',
             sortOrder: selectedSort,
-            type: selectedType,
         });
-    };;
+    };
 
     return (
         <div className="flex justify-center flex-wrap gap-6 mb-6 p-4 bg-white shadow-md rounded-lg">
-            {/* Type Filter */}
-            <div className="flex items-center gap-2">
-                <label htmlFor="type" className="text-sm font-medium text-gray-700">Loại:</label>
-                <select
-                    id="type"
-                    value={selectedType}
-                    onChange={(e) => handleTypeSelect(e.target.value)}
-                    className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    {productTypes.map((type, index) => (
-                        <option key={index} value={type}>{type}</option>
-                    ))}
-                </select>
-            </div>
-
             {/* Brand Filter */}
             <div className="flex items-center gap-2">
                 <label htmlFor="brand" className="text-sm font-medium text-gray-700">Hãng:</label>
@@ -160,7 +134,7 @@ export const ProductFilter = ({
                     <div className="flex items-center border border-gray-300 rounded">
                         <button
                             onClick={() => adjustMaxPrice(-500000)}
-                            className="p-3 bg-gray-300 text-black rounded-l  "
+                            className="p-3 bg-gray-300 text-black rounded-l"
                         >
                             <FaMinus className="w-5 h-5" />
                         </button>
@@ -181,55 +155,57 @@ export const ProductFilter = ({
                 </div>
             </div>
 
+            <div className="flex flex-row gap-4 items-center mt-4">
 
-            {/* Sort Filter */}
-            <div className="flex items-center gap-2">
-                <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo:</label>
-                <select
-                    id="sort"
-                    value={selectedSort}
-                    onChange={handleSortChange}
-                    className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="asc">Giá tăng dần</option>
-                    <option value="desc">Giá giảm dần</option>
-                </select>
+                {/* Sort Filter */}
+                <div className="flex items-center gap-2">
+                    <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo:</label>
+                    <select
+                        id="sort"
+                        value={selectedSort}
+                        onChange={handleSortChange}
+                        className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="asc">Giá tăng dần</option>
+                        <option value="desc">Giá giảm dần</option>
+                    </select>
+                </div>
+
+                {/* Apply Filter Button */}
+                <div className="flex items-center">
+                    <button
+                        onClick={handlePriceRangeChange}
+                        className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        Xem kết quả
+                    </button>
+                </div>
+
+                {/* Clear All Filters Button */}
+                <div className="flex items-center">
+                    <button
+                        onClick={clearAllFilters}
+                        className="p-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                        Đặt lại
+                    </button>
+                </div>
             </div>
 
-            {/* Apply Filter Button */}
-            <div className="flex items-center">
-                <button
-                    onClick={handlePriceRangeChange}
-                    className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    Xem kết quả
-                </button>
-            </div>
-
-            {/* Clear All Filters Button */}
-            <div className="flex items-center">
-                <button
-                    onClick={clearAllFilters}
-                    className="p-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                    Đặt lại
-                </button>
-            </div>
-
-            {/*remove spin */}
+            {/* Remove spin buttons for number inputs */}
             <style>
                 {`
-                    input[type="number"] {
-                        appearance: none;
-                        -moz-appearance: textfield;
-                        -webkit-appearance: none;
-                    }
+            input[type="number"] {
+                appearance: none;
+                -moz-appearance: textfield;
+                -webkit-appearance: none;
+            }
 
-                    input[type="number"]::-webkit-outer-spin-button,
-                    input[type="number"]::-webkit-inner-spin-button {
-                        -webkit-appearance: none;
-                    }
-                `}
+            input[type="number"]::-webkit-outer-spin-button,
+            input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+            }
+        `}
             </style>
         </div>
 

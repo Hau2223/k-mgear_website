@@ -2,24 +2,22 @@ import React, { useEffect, useState, useRef } from "react";
 import { FaSearch, FaHeadset, FaMapMarkerAlt, FaCamera, FaShoppingCart, FaNewspaper, FaBook, FaCoins, FaShieldAlt } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/Logo.png";
-import product from "../../utils/product.json";
 import { getCartByIdUserStatus } from "../../services/cartService";
-import { getAll, getProductById} from "../../services/productService.js";
+import { getAll, getProductById } from "../../services/productService.js";
 const Cart = ({ }) => {
     const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(false);
     const [carts, setCarts] = useState([]);
     const [products, setProducts] = useState([]);
-    const userID = null;
-    // "6730551bf07941a1390ee637"
+    const userID = localStorage.getItem("userID")
 
     const loadCarts = async () => {
-        if(userID == null){
+        if (userID == null) {
             //local
             const localProducts = JSON.parse(localStorage.getItem("productIDs"));
-            if(!localProducts){
+            if (!localProducts) {
                 setProducts([]);
-                return 
+                return
             }
             const productData = await Promise.all(
                 localProducts.map(async (product) => await getProductById(product.idProduct))
@@ -31,12 +29,14 @@ const Cart = ({ }) => {
             idUser: userID,
             status: "cart",
         });
-        
+
         setCarts(cartData);
         const productData = await Promise.all(
             carts.map(async (cart) => await getProductById(cart.idProduct))
         );
         setProducts(productData);
+        console.log(products);
+        
     };
 
     useEffect(() => {
@@ -117,9 +117,9 @@ export function Header() {
             }
         } catch (error) {
             console.error('Fetch error:', error.message);
-            }
+        }
     }
-   
+
     const formatPrice = (price) => {
         return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', '').trim();
     };
@@ -170,6 +170,7 @@ export function Header() {
         const handleKeyPress = (e) => {
             if (e.key === 'Enter' && searchTerm !== "") {
                 navigate(`/search/${searchTerm}`);
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
             else {
                 setPlaceholder('Bạn cần tìm gì ?')
@@ -194,17 +195,18 @@ export function Header() {
                 />
                 <FaSearch
                     className="absolute right-3 text-gray-500 cursor-pointer"
-                    onClick={() => handleClickSearchIcon(searchTerm)}
+                    onClick={() => handleClickSearchIcon()}
                 />
                 {searchResults.length > 0 && (
                     <div
                         className="absolute top-full left-0 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10 max-h-80 overflow-y-auto"
                         ref={searchResultsRef}
                     >
-                        {searchResults.slice(0, 5).map((product) => (
+                        {searchResults.slice(0, 4).map((product) => (
                             <Link
                                 key={product._id}
-                                to={`product/${product._id}`} 
+                                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                                to={`/product/${product._id}`}
                                 className="flex items-center p-4 hover:bg-gray-100 cursor-pointer"
                             >
                                 <div className="flex-grow">
@@ -225,12 +227,12 @@ export function Header() {
                                 />
                             </Link>
                         ))}
-                        {searchResults.length > 5 && (
+                        {searchResults.length > 4 && (
                             <div
                                 className="text-center text-black py-2 hover:text-red-500 border-t hover:bg-gray-100 cursor-pointer"
-                                onClick={() => { }}
+                                onClick={() => handleClickSearchIcon()}
                             >
-                                See all
+                                Xem thêm
                             </div>
                         )}
                     </div>
@@ -246,7 +248,8 @@ export function Header() {
                 {/* Logo */}
                 <div className="flex items-center w-1/10">
                     <div className="cursor-pointer">
-                        <Link to={`/`}>
+                        <Link to={`/`}
+                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
                             <img src={logo} alt="Logo" className="w-20 h-20 object-cover" />
                         </Link>
                     </div>
@@ -267,7 +270,7 @@ export function Header() {
                     <Link to="/" className="flex items-center">
                         <FaCamera className="mr-2" /> Tra cứu đơn hàng
                     </Link>
-                    <Cart/>
+                    <Cart />
                 </div>
             </div>
 

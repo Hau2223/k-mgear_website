@@ -27,7 +27,7 @@ export function SearchFilter({
         setSelectedType(newType);
         onFilterChange({
             type: newType,
-            brand: selectedBrand,
+            brand: '',
             priceRange: { min: minPrice, max: maxPrice },
             sortOrder: selectedSort,
         });
@@ -207,8 +207,8 @@ export function SearchFilter({
                     onChange={handleSortChange}
                     className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                    <option value="asc">Tăng dần</option>
-                    <option value="desc">Giảm dần</option>
+                    <option value="asc">Giá tăng dần</option>
+                    <option value="desc">Giá giảm dần</option>
                 </select>
             </div>
 
