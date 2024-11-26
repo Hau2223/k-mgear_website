@@ -9,17 +9,17 @@ app.post('/create', async (req, res)  => {
     const { idUser, idProduct, amount, status } = req.body;
     const existingCart = await Cart.findOne({ idProduct, idUser, status: "cart" });  
     if (existingCart) {
-        return res.status(200).json({ message: 'Already in cart!' });
+        return res.status(200).json({ message: 'Đã có trong giỏ hàng!' });
     }
     const newCart = new Cart({ idUser, idProduct, amount, status });
     
     newCart
         .save()
         .then(() => {
-            res.status(200).json({ message: 'Cart created successfully!' });
+            res.status(200).json({ message: 'Thêm vào giỏ hàng thành công!' });
         })
         .catch(err => {
-            res.status(404).json({ message: 'Error creating cart' });
+            res.status(404).json({ message: 'Lỗi giỏ hàng' });
         });
 });
 app.put('/updateByIdUserStatus', async (req, res) => {
