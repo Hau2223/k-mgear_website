@@ -40,7 +40,7 @@ export function SearchPage() {
             let productsToFilter = productData;
             // Apply filters
             if (filters.type) {
-                productsToFilter = productsToFilter.filter((product) => product.type === filters.type);
+                productsToFilter = productsToFilter.filter((product) => product.type === filters.type);  
             }
             if (filters.brand) {
                 productsToFilter = productsToFilter.filter((product) => product.brand === filters.brand);
@@ -63,17 +63,24 @@ export function SearchPage() {
             setFilteredProducts(productsToFilter);
         }
     }, [filters, sortOrder, productData]);
-
-    // Update available types and brands when product data changes
-    useEffect(() => {
+    
+      // Update available types and brands when product data changes
+      useEffect(() => {
         if (productData) {
             const types = [...new Set(productData.map(product => product.type))];
             setProductTypes(types);
 
-            const brands = [...new Set(productData.map(product => product.brand))];
-            setProductBrands(brands);
+            // Filter brands based on the selected type
+            if (filters.type) {
+                const brands = [...new Set(productData.filter(product => product.type === filters.type).map(product => product.brand))];
+                setProductBrands(brands);
+            } else {
+                // Show all brands if no type is selected
+                const brands = [...new Set(productData.map(product => product.brand))];
+                setProductBrands(brands);
+            }
         }
-    }, [productData]);
+    }, [productData, filters.type]);
 
     // Function to handle filter changes
     const handleFilterChange = (newFilters) => {
@@ -84,7 +91,6 @@ export function SearchPage() {
     const handleSortChange = (newSortOrder) => {
         setSortOrder(newSortOrder);
     };
-
     return (
         <div className="m-6 max-w-7xl mx-auto">
             {/* Title Section */}

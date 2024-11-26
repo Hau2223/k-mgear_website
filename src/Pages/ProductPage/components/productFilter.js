@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 
-export const ProductFilter = ({
+export function ProductFilter({
     priceRange,
     setPriceRange,
     selectedBrand,
     setSelectedBrand,
     productBrands,
     onFilterChange,
-    setSortOrder,
-}) => {
-    const [minPrice, setMinPrice] = useState(priceRange.min || "");
-    const [maxPrice, setMaxPrice] = useState(priceRange.max || "");
-    const [selectedSort, setSelectedSort] = useState("asc");
+    setSortOrder, // Assuming a parent function to handle the sort change
+}) {
+    const [minPrice, setMinPrice] = useState(priceRange.min || '');
+    const [maxPrice, setMaxPrice] = useState(priceRange.max || '');
+    const [selectedSort, setSelectedSort] = useState('asc'); // New state for sorting option
 
     useEffect(() => {
-        setMinPrice(priceRange.min || "");
-        setMaxPrice(priceRange.max || "");
+        setMinPrice(priceRange.min || '');
+        setMaxPrice(priceRange.max || '');
     }, [priceRange]);
 
     const handleBrandChange = (e) => {
         const newBrand = e.target.value;
         setSelectedBrand(newBrand);
         onFilterChange({
-            priceRange,
             brand: newBrand,
+            priceRange: { min: minPrice, max: maxPrice },
             sortOrder: selectedSort,
         });
     };
@@ -33,9 +32,20 @@ export const ProductFilter = ({
     const handlePriceRangeChange = () => {
         setPriceRange({ min: minPrice, max: maxPrice });
         onFilterChange({
-            priceRange: { min: minPrice, max: maxPrice },
             brand: selectedBrand,
+            priceRange: { min: minPrice, max: maxPrice },
             sortOrder: selectedSort,
+        });
+    };
+
+    const handleSortChange = (e) => {
+        const sortOrder = e.target.value;
+        setSelectedSort(sortOrder);
+        setSortOrder(sortOrder); // Pass sort order up to parent
+        onFilterChange({
+            brand: selectedBrand,
+            priceRange: { min: minPrice, max: maxPrice },
+            sortOrder: sortOrder,
         });
     };
 
@@ -49,36 +59,35 @@ export const ProductFilter = ({
         setMaxPrice(value);
     };
 
-    const handleSortChange = (e) => {
-        const sortOrder = e.target.value;
-        setSelectedSort(sortOrder);
-        setSortOrder(sortOrder);
-        onFilterChange({
-            priceRange,
-            brand: selectedBrand,
-            sortOrder,
-        });
-    };
-
+    // Adjust min price with validation
     const adjustMinPrice = (amount) => {
-        setMinPrice((prev) => Math.max(0, parseInt(prev || 0) + amount));
+        let newMinPrice = (Number(minPrice) || 0) + amount;
+        if (newMinPrice < 0) newMinPrice = 0; // Prevent min price from going below 0
+        if (newMinPrice > (Number(maxPrice) || 0)) newMinPrice = Number(maxPrice) || 0; // Prevent min price from being greater than max price
+        setMinPrice(newMinPrice.toString());
     };
 
+    // Adjust max price with validation
     const adjustMaxPrice = (amount) => {
-        setMaxPrice((prev) => Math.max(minPrice, parseInt(prev || 0) + amount));
+        let newMaxPrice = (Number(maxPrice) || 0) + amount;
+        if (newMaxPrice < (Number(minPrice) || 0)) newMaxPrice = Number(minPrice) || 0; // Prevent max price from going below min price
+        setMaxPrice(newMaxPrice.toString());
     };
 
     const clearAllFilters = () => {
+        // Reset all filter states
+        setSelectedBrand('');
         setMinPrice('');
         setMaxPrice('');
-        setSelectedBrand('');
         setPriceRange({ min: '', max: '' });
+        setSelectedSort(selectedSort); // Reset sort order
 
-        // Notify parent to reset only price and brand filters
+        // Apply the reset filter to products
         onFilterChange({
-            priceRange: { min: '', max: '' },
+            type: '',
             brand: '',
-            sortOrder: selectedSort,
+            priceRange: { min: '', max: '' },
+            sortOrder: '',
         });
     };
 
@@ -155,11 +164,11 @@ export const ProductFilter = ({
                 </div>
             </div>
 
-            <div className="flex flex-row gap-4 items-center mt-4">
-
-                {/* Sort Filter */}
+            {/* Sort by Price, Apply Filter and Clear Filters on the Same Row */}
+            <div className="flex items-center gap-4">
+                {/* Sort Order */}
                 <div className="flex items-center gap-2">
-                    <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo:</label>
+                    <label htmlFor="sort" className="text-sm font-medium text-gray-700">Sắp xếp theo giá:</label>
                     <select
                         id="sort"
                         value={selectedSort}
@@ -192,7 +201,7 @@ export const ProductFilter = ({
                 </div>
             </div>
 
-            {/* Remove spin buttons for number inputs */}
+            {/* Remove spin */}
             <style>
                 {`
             input[type="number"] {
@@ -204,10 +213,11 @@ export const ProductFilter = ({
             input[type="number"]::-webkit-outer-spin-button,
             input[type="number"]::-webkit-inner-spin-button {
                 -webkit-appearance: none;
+                margin: 0;
             }
         `}
             </style>
         </div>
 
     );
-};
+}
