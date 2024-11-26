@@ -577,11 +577,13 @@ export const CartConfirmation = () => {
             })
         }
         const proIDs = JSON.parse(localStorage.getItem("productIDs"))
-        const filteredItems = proIDs.filter(item => !selectedProducts.find(e=>item.idProduct === e._id));
-        if(filteredItems.length > 0){
-            localStorage.setItem("productIDs",JSON.stringify(filteredItems))
-        }else{
-            localStorage.removeItem("productIDs")
+        if(proIDs){
+            const filteredItems = proIDs.filter(item => !selectedProducts.find(e=>item.idProduct === e._id));
+            if(filteredItems.length > 0){
+                localStorage.setItem("productIDs",JSON.stringify(filteredItems))
+            }else{
+                localStorage.removeItem("productIDs")
+            }
         }
         localStorage.removeItem("selectedProducts")
         alert("Thanh toán thành công!")
