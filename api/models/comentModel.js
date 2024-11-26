@@ -23,6 +23,11 @@ const commentSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   }, 
+  nameUser: {
+    type: String,
+    require: true
+  },
+
 });
 
 const Comment = mongoose.model("Comment", commentSchema);
