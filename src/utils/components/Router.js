@@ -6,7 +6,7 @@ import { BANNERS } from "../constants.js";
 import { HomePageBody } from "../../Pages/HomePage/homePage.js";
 import { ProductDetailPage } from "../../Pages/ProductDetailPage/productDetailPage.js";
 import { ProductPage } from "../../Pages/ProductPage/productPage.js";
-import { CartPage } from "../../Pages/CartPage/cartPage.js";
+import { CartPage, CartInfoPage, CartConfirmation } from "../../Pages/CartPage/cartPage.js";
 import { SearchPage } from "../../Pages/SearchPage/searchPage.js";
 import {ProductManagement} from "../../Pages/ProductManagementPage/productManagementPage.js";
 
@@ -47,6 +47,8 @@ function Body() {
                     <Routes>
                         <Route path="/" element={<HomePageBody />} />
                         <Route path="/cart" element={<CartPage />} />
+                        <Route path="/cartInfo" element={<CartInfoPage />} />
+                        <Route path="/cartConf" element={<CartConfirmation />} />
                         <Route path="/product/:id" element={<ProductDetailPage />} />
                         <Route path="/collections/:type" element={<ProductPage />} />
                         <Route path="/search/:searchTerm" element={<SearchPage />} />

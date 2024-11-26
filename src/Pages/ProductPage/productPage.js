@@ -1,80 +1,98 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { ProductPageCollection } from "./components/productPageCollection.js";
-import { Filter } from "./components/filter.js";
-import product from "../../utils/product.json";
+import { ProductFilter } from "./components/productFilter.js";
+import { getProductByType } from "../../services/productService.js";
 
 export function ProductPage() {
     const { type } = useParams();
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-    const [nameFilter, setNameFilter] = useState('');
-    const [selectedType, setSelectedType] = useState(type);
-    const productTypes = [...new Set(product.map(({ type }) => type))];
-    const navigate = useNavigate();
+    const [filters, setFilters] = useState({
+        brand: '',
+        priceRange: { min: '', max: '' },
+    });
+    const [productBrands, setProductBrands] = useState([]);
+    const [sortOrder, setSortOrder] = useState('asc');
+    const [productData, setProductData] = useState(null);
 
     useEffect(() => {
-        setFilteredProducts(product);
-    }, []);
+        const fetchProductNeeded = async (type) => {
+            try {
+                const response = await getProductByType(type);
+                if (response) {
+                    setProductData(response);
+                } else {
+                    console.error('Error fetching products');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+            }
+        };
+        fetchProductNeeded(type);
+    }, [type]);
 
-    const handleFilterClick = () => {
-        let newFilteredProducts = product;
-
-        // Filter by name
-        if (nameFilter) {
-            newFilteredProducts = newFilteredProducts.filter(product =>
-                product.name.toLowerCase().includes(nameFilter.toLowerCase())
-            );
+    useEffect(() => {
+        if (productData) {
+            let productsToFilter = productData;
+            if (filters.brand) {
+                productsToFilter = productsToFilter.filter((product) => product.brand === filters.brand);
+            }
+            if (filters.priceRange.min || filters.priceRange.max) {
+                productsToFilter = productsToFilter.filter(
+                    (product) =>
+                        (filters.priceRange.min === '' || product.price >= filters.priceRange.min) &&
+                        (filters.priceRange.max === '' || product.price <= filters.priceRange.max)
+                );
+            }
+            // Apply sorting
+            if (sortOrder === 'asc') {
+                productsToFilter = productsToFilter.sort((a, b) => a.price - b.price);
+            } else if (sortOrder === 'desc') {
+                productsToFilter = productsToFilter.sort((a, b) => b.price - a.price);
+            }
+            // Set filtered products
+            setFilteredProducts(productsToFilter);
         }
-
-        // Filter by price
-        const minPrice = parseFloat(priceRange.min);
-        const maxPrice = parseFloat(priceRange.max);
-
-        if (!isNaN(minPrice)) {
-            newFilteredProducts = newFilteredProducts.filter(product => product.price >= minPrice);
+    }, [filters, sortOrder, productData]);
+    // Update available types and brands when product data changes
+    useEffect(() => {
+        if (productData) {
+            const brands = [...new Set(productData.map(product => product.brand))];
+            setProductBrands(brands);
         }
-        if (!isNaN(maxPrice)) {
-            newFilteredProducts = newFilteredProducts.filter(product => product.price <= maxPrice);
-        }
+    }, [productData]);
 
-        // Filter by selected type
-        if (selectedType) {
-            handleViewAllClick(selectedType);
-        }
-
-        setFilteredProducts(newFilteredProducts);
-        console.log("Filtering with:", { nameFilter, priceRange, selectedType });
-        console.log("Filtered Products:", newFilteredProducts);
+    // Function to handle filter changes
+    const handleFilterChange = (newFilters) => {
+        setFilters(newFilters);
     };
 
-    const handleViewAllClick = (type) => {
-        navigate(`/collections/${type}`);
-    };
-
-    const resetFilters = () => {
-        setNameFilter('');
-        setPriceRange({ min: '', max: '' });
-        setSelectedType(type);
-        setFilteredProducts(product);
+    // Function to handle sort changes
+    const handleSortChange = (newSortOrder) => {
+        setSortOrder(newSortOrder);
     };
 
     return (
-        <div className="flex flex-col w-4/5 mx-auto border border-gray-300">
-            <div className="flex justify-center items-center border-b border-gray-300 w-full sticky top-0 bg-white z-50 h-20">
-                <Filter
-                    nameFilter={nameFilter}
-                    setNameFilter={setNameFilter}
-                    priceRange={priceRange}
-                    setPriceRange={setPriceRange}
-                    onFilterClick={handleFilterClick}
-                    onResetFilters={resetFilters}
-                    productTypes={productTypes}
-                    selectedType={selectedType}
-                    setSelectedType={setSelectedType}
-                />
+        <div className="my-6 max-w-7xl">
+            <div className="text-4xl font-bold text-gray-800 text-center mt-10">
+                BỘ SƯU TẬP
             </div>
-            <ProductPageCollection type={type} products={filteredProducts} />
+            <div className="text-2xl font-medium text-gray-600 text-center mb-5">
+                Sản phẩm: <span className="text-blue-600 italic">{type}</span>
+            </div>
+
+            {/* Filter Section */}
+            <ProductFilter
+                priceRange={filters.priceRange}
+                setPriceRange={(range) => setFilters({ ...filters, priceRange: range })}
+                selectedBrand={filters.brand}
+                setSelectedBrand={(brand) => setFilters({ ...filters, brand })}
+                productBrands={productBrands}
+                onFilterChange={handleFilterChange}
+                setSortOrder={handleSortChange}
+            />
+            {/* Product Collection Section */}
+            <ProductPageCollection products={filteredProducts} />
         </div>
     );
 }

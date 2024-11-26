@@ -11,10 +11,11 @@ export function HomePage() {
 
 export function HomePageBody() {
   return (
-    <div className="space-y-8">
-      <HomePageCollection type="Bàn phím" />
+    <div className="space-y-5">
       <HomePageCollection type="Chuột" />
+      <HomePageCollection type="Bàn phím" />
       <HomePageCollection type="Màn hình" />
+      <HomePageCollection type="Tai nghe" />
     </div>
   );
 }

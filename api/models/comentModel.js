@@ -8,8 +8,8 @@ const commentSchema = new mongoose.Schema({
   },
   idUser: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
     ref: 'User',
+    default: "",
   },
   datetime: {
     type: Date,
@@ -22,7 +22,12 @@ const commentSchema = new mongoose.Schema({
   rating: {
     type: Number,
     default: 0,
-  }
+  }, 
+  nameUser: {
+    type: String,
+    require: true
+  },
+
 });
 
 const Comment = mongoose.model("Comment", commentSchema);

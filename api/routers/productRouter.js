@@ -42,15 +42,12 @@ app.post("/create", async  (req, res) => {
 app.put("/update/:id", async (req, res) => {
   try {
     const { id } = req.params;
-
     // Construct update data including imageUrl and contentType
     const updateData = {
       ...req.body,
       imageUrl: `data:${req.body.typeImage};base64,${req.body.imageUrl}`,
       contentType: req.body.typeImage,
     };
-
-    console.log(updateData);
 
     // Find product by ID and update
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
@@ -60,7 +57,6 @@ app.put("/update/:id", async (req, res) => {
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
-
     res.status(200).json({
       message: "Product updated successfully!",
       status: 200,
@@ -70,7 +66,22 @@ app.put("/update/:id", async (req, res) => {
     console.error("Error updating product:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-});
+}
+);
+
+app.put('/updateRating/:id', async (req, res) => {
+  try {
+      const { id } = req.params;
+      const updatedProductRating = req.body;
+      const updatedProduct = await Product.findByIdAndUpdate(id, updatedProductRating, { new: true });
+      if (!updatedProduct) {
+          return res.status(404).json({ message: 'Product not found' });
+      }
+      res.status(200).json({ message: 'Product updated successfully!', status: 200, data: updatedProduct, });
+  } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }})
 
 // Update product
 
