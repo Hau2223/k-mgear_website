@@ -36,7 +36,6 @@ const Cart = ({ }) => {
         );
         setProducts(productData);
         console.log(products);
-
     };
 
     useEffect(() => {
