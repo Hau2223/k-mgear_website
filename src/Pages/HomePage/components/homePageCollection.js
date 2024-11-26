@@ -7,7 +7,7 @@ export function HomePageCollection({ type }) {
     const [productAll, setProductAll] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(()=>{
+    useEffect(() => {
         const fetchProductNeeded = async (type) => {
             try {
                 const response = await getProductByType(type);
@@ -31,22 +31,22 @@ export function HomePageCollection({ type }) {
     };
 
     return (
-        <div className="p-4 mb-4 flex flex-col text-left">
+        <div className="p-4 my-5 border bg-slate-100 rounded-lg flex flex-col text-left">
             {/* Header Section */}
-            <div className="flex items-center mb-5 px-4">
-                <h1 className="text-2xl font-bold m-0">{type} HOT NHẤT</h1>
+            <div className="flex items-center mb-2 px-4">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+                    {type} HOT NHẤT
+                </h1>
                 <div className="ml-auto">
                     <button
                         onClick={handleViewAllClick}
-                        className="bg-red-500 text-white text-lg rounded px-4 py-2 cursor-pointer border-none transition-all duration-300 hover:bg-white hover:text-red-500"
-                    >
+                        className="bg-gradient-to-r from-red-500 to-orange-500 text-white text-lg rounded-lg px-4 py-2 cursor-pointer border-none shadow-md transition-all duration-300 hover:from-orange-500 hover:to-yellow-500 hover:text-white">
                         Xem tất cả
                     </button>
                 </div>
             </div>
-
             {/* Cards Section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-evenly mx-auto gap-3 ">
                 {productAll
                     .filter((item) => item?.type === type)
                     .slice(0, 4)
@@ -54,12 +54,15 @@ export function HomePageCollection({ type }) {
                         <div
                             key={index}
                             onClick={() => handleCardClick(item._id)}
-                            className="cursor-pointer"
+                            className="cursor-pointer hover:scale-100 transform transition-transform duration-300"
                         >
-                            <Card item={item} />
+                            <Card
+                                item={{...item}}
+                            />
                         </div>
                     ))}
             </div>
         </div>
+
     );
 }

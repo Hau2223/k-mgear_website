@@ -76,7 +76,7 @@ export function ProductPage() {
 
     const resetFilters = () => {
         setFilters({
-            type: '',
+            type: type,
             brand: '',
             priceRange: { min: '', max: '' },
             sortOrder: 'asc',

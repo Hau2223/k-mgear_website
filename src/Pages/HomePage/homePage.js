@@ -11,7 +11,7 @@ export function HomePage() {
 
 export function HomePageBody() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <HomePageCollection type="Bàn phím" />
       <HomePageCollection type="Chuột" />
       <HomePageCollection type="Màn hình" />
