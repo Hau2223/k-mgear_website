@@ -30,6 +30,14 @@ export const updateProduct = async (params, id) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
+        totalReviews : params.totalReviews
+    });
+}
+
+export const updateRating = async (params, id) => {
+    return await put(`/product/updateRating/${id}`, {
+        rating: params.rating,
+        totalReviews : params.totalReviews
     });
 }
 
@@ -43,6 +51,10 @@ export const getAll = async () => {
 
 export const getProductById = async (id) => {
     return await get(`/product/getById/${id}`);
+}
+
+export const getProductByTerm = async (term) => {
+    return await get(`/product/getByTerm/${term}`);
 }
 
 export const getProductByType = async (type) => {

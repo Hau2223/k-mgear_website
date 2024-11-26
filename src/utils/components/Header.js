@@ -35,6 +35,7 @@ const Cart = ({ }) => {
             carts.map(async (cart) => await getProductById(cart.idProduct))
         );
         setProducts(productData);
+        console.log(products);
         
     };
 
@@ -211,10 +212,12 @@ export function Header() {
                                 <div className="flex-grow">
                                     <p className="text-lg text-black font-semibold" >{product.name}</p>
                                     <div className="flex items-center">
-                                        <p className="text-red-500 font-semibold pr-1">
-                                            {formatPrice(product.price * (1 - product.discount / 100))}
-                                        </p>
-                                        <p className="text-gray-500 line-through mr-2">
+                                        {product.discount > 0 && (
+                                            <p className="text-red-500 font-semibold pr-1">
+                                                {formatPrice(product.price * (1 - product.discount / 100))}
+                                            </p>
+                                        )}
+                                        <p className={`text-gray-500 ${product.discount > 0 ? 'line-through mr-2' : 'text-red-500 font-semibold'}`}>
                                             {formatPrice(product.price)}
                                         </p>
                                     </div>
