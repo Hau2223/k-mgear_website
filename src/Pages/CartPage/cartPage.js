@@ -53,13 +53,18 @@ export function CartPage() {
     };
 
     // Update product quantity
-    const updateQuantity = (id, amount) => {
+    const updateQuantity = async (id, amount) => {
+        var max = (await getProductById(id)).quantity
+    
         setProducts((prevItems) =>
             prevItems.map((item) => {
                 if (item._id === id) {
+                    if(max > item.quantity + amount){
+                        max = item.quantity + amount
+                    }
                     const updatedItem = {
                         ...item,
-                        quantity: Math.max(1, item.quantity + amount),
+                        quantity: Math.max(1, max),
                     };
                     return updatedItem;
                 }
