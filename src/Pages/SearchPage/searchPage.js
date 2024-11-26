@@ -33,12 +33,13 @@ export function SearchPage() {
         };
         fetchProductData();
     }, [searchTerm]);
+
     // Apply filters and sorting when filters, searchTerm, or sortOrder change
     useEffect(() => {
         if (productData) {
             let productsToFilter = productData;
 
-            // First, apply searchTerm filter if it exists
+            // Apply searchTerm filter if it exists
             if (searchTerm) {
                 productsToFilter = productsToFilter.filter(
                     (product) =>
@@ -47,14 +48,21 @@ export function SearchPage() {
                 );
             }
 
-            // Set the available types and brands based on filtered products
+            // Set the available types based on filtered products
             const types = [...new Set(productsToFilter.map(product => product.type))];
-            const brands = [...new Set(productsToFilter.map(product => product.brand))];
 
+            // Reset the brand filter when type is changed
+            if (filters.type) {
+                // Set the available brands based on the selected type
+                const brands = [...new Set(productsToFilter.filter(product => product.type === filters.type).map(product => product.brand))];
+                setProductBrands(brands);
+            } else {
+                // If no type is selected, show all brands
+                const allBrands = [...new Set(productsToFilter.map(product => product.brand))];
+                setProductBrands(allBrands);
+            }
             setProductTypes(types);
-            setProductBrands(brands);
-
-            // Then apply other filters and sorting
+            // Apply other filters and sorting
             filterProducts(productsToFilter);
         }
     }, [filters, searchTerm, sortOrder, productData]);
@@ -98,8 +106,6 @@ export function SearchPage() {
         setSortOrder(newSortOrder); // Update sort order
     };
 
-
-
     return (
         <div className="m-6 max-w-7xl mx-auto">
             {/* Title Section */}
@@ -119,7 +125,7 @@ export function SearchPage() {
                 selectedBrand={filters.brand}
                 setSelectedBrand={(brand) => setFilters({ ...filters, brand })}
                 productTypes={productTypes}
-                productBrands={productBrands}
+                productBrands={productBrands} 
                 onFilterChange={handleFilterChange}
                 setSortOrder={handleSortChange}
             />
