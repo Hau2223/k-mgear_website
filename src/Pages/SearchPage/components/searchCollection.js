@@ -11,7 +11,7 @@ export function SearchPageCollection({ products }) {
     };
 
     const handleShowMore = () => {
-        setvisibleProduct((prevCount) => prevCount + 10); // Show 10 more products on each click
+        setvisibleProduct((prevCount) => prevCount + 10);
     };
 
     return (

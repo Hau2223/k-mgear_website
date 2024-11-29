@@ -11,11 +11,14 @@ export function SearchFilter({
     productTypes,
     productBrands,
     onFilterChange,
-    setSortOrder, // Assuming a parent function to handle the sort change
+    setSortOrder,
 }) {
-    const [minPrice, setMinPrice] = useState(priceRange.min || '');
-    const [maxPrice, setMaxPrice] = useState(priceRange.max || '');
-    const [selectedSort, setSelectedSort] = useState('asc'); // New state for sorting option
+    const [minPrice, setMinPrice]
+        = useState(priceRange.min || '');
+    const [maxPrice, setMaxPrice]
+        = useState(priceRange.max || '');
+    const [selectedSort, setSelectedSort]
+        = useState('asc');
 
     useEffect(() => {
         setMinPrice(priceRange.min || '');

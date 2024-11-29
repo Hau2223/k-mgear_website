@@ -86,7 +86,6 @@ export function SearchPage() {
     const handleFilterChange = (newFilters) => {
         setFilters(newFilters);
     };
-
     // Function to handle sort changes
     const handleSortChange = (newSortOrder) => {
         setSortOrder(newSortOrder);
