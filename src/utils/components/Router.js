@@ -7,13 +7,11 @@ import { BANNERS } from "../constants.js";
 import { HomePageBody } from "../../Pages/HomePage/homePage.js";
 import { ProductDetailPage } from "../../Pages/ProductDetailPage/productDetailPage.js";
 import { ProductPage } from "../../Pages/ProductPage/productPage.js";
-import {
-  CartPage,
-  CartInfoPage,
-  CartConfirmation,
-} from "../../Pages/CartPage/cartPage.js";
+import { CartPage } from "../../Pages/CartPage/cartPage.js";
 import { SearchPage } from "../../Pages/SearchPage/searchPage.js";
 import { ProductManagement } from "../../Pages/ProductManagementPage/productManagementPage.js";
+import { CartInfoPage } from "../../Pages/CartPage/component/cartInfo.js";
+import { CartConfirmation } from "../../Pages/CartPage/component/cartConfirmation.js";
 
 export function NavigationHandler() {
   const location = useLocation();

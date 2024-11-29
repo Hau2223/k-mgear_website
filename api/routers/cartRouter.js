@@ -12,26 +12,32 @@ app.post('/create', async (req, res)  => {
         return res.status(200).json({ message: 'Đã có trong giỏ hàng!' });
     }
     const newCart = new Cart({ idUser, idProduct, amount, status });
-    
     newCart
         .save()
         .then(() => {
             res.status(200).json({ message: 'Thêm vào giỏ hàng thành công!' });
         })
         .catch(err => {
-            res.status(404).json({ message: 'Lỗi giỏ hàng' });
+            res.status(404).json({ message: 'Lỗi giỏ hàng',err });
         });
 });
 app.put('/updateByIdUserStatus', async (req, res) => {
     try {
         const data = req.body; 
-        
-        const updatedCart = await Cart.findOneAndUpdate({idUser: data.idUser,idProduct: data.idProduct ,status: data.oldStatus},{status: data.newStatus,amount: data.amount})
-        console.log(updatedCart);
+        const updatedCart = await Cart.findOneAndUpdate(
+            {
+            idUser: data.idUser,
+            idProduct: data.idProduct,
+            status: data.oldStatus},
+            {
+            status: data.newStatus,
+            amount: data.amount})
         if (!updatedCart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
-        res.status(200).json({ message: 'Cart updated successfully!', status: 200, product: updatedCart,});
+        res.status(200).json({ message: 'Cart updated successfully!', 
+                                status: 200, 
+                                product: updatedCart,});
     } catch (error) {
         console.error('Error updating Cart:', error);
         res.status(500).json({ message: 'Internal server error' });
