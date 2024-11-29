@@ -100,7 +100,6 @@ const Cart = ({ }) => {
 
 export function Header() {
     const [productData, setProductData] = useState([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetchAllProduct();
@@ -119,25 +118,14 @@ export function Header() {
         }
     }
 
+    const navigate = useNavigate();
     const formatPrice = (price) => {
         return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace('₫', '').trim();
     };
 
     const SearchBar = ({ productData }) => {
         const [searchTerm, setSearchTerm] = useState('');
-        const [searchResults, setSearchResults] = useState([]);
-        const [placeholder, setPlaceholder] = useState("Tìm kiếm...");
         const searchResultsRef = useRef(null);
-
-        useEffect(() => {
-            const handleClickOutside = (event) => {
-                if (!searchResultsRef.current?.contains(event.target)) {
-                    setSearchResults([]);
-                }
-            };
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => document.removeEventListener('mousedown', handleClickOutside);
-        }, []);
 
         const handleSearch = (term) => {
             setSearchTerm(term);
@@ -156,6 +144,19 @@ export function Header() {
                 setSearchResults([]);
             }
         };
+
+        const [searchResults, setSearchResults] = useState([]);
+        const [placeholder, setPlaceholder] = useState("Tìm kiếm...");
+
+        useEffect(() => {
+            const handleClickOutside = (event) => {
+                if (!searchResultsRef.current?.contains(event.target)) {
+                    setSearchResults([]);
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }, []);
 
         const handleClickSearchIcon = () => {
             if (searchTerm !== "") {

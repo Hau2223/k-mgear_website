@@ -5,14 +5,10 @@ import { createCart } from "../../services/cartService.js";
 import { getProductById } from "../../services/productService.js";
 import { FrameRate } from "./components/rateDetailPage.js";
 
-
-
 export function ProductDetailPage() {
-    const [productData, setProductData] = useState(null);  // Default to null
-const { id } = useParams();
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+    const [productData, setProductData] = useState(null);
+    const { id } = useParams();
+
     const refreshProductData = async () => {
         try {
             const response = await getProductById(id);
@@ -25,25 +21,26 @@ const { id } = useParams();
             console.error('Fetch error:', error.message);
         }
     };
-
     useEffect(() => {
         refreshProductData();
     }, [id]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     return <>
-        <ProductDetailPageBody productData={productData} />
-        <FrameRate refreshProductData={refreshProductData}/>
+        <ProductDetailPageBody />
+        <FrameRate refreshProductData={refreshProductData} />
         <></>
     </>;
 }
 
 export function ProductDetailPageBody() {
-    const [productData, setProductData] = useState(null);  // Default to null
+    const [productData, setProductData] = useState(null);
     const { id } = useParams();
 
-    const userID = localStorage.getItem("userID");
-
-
-    useEffect(useCallback(() => {
+    useEffect(() => {
         const fetchProductData = async () => {
             try {
                 const response = await getProductById(id);
@@ -58,8 +55,9 @@ export function ProductDetailPageBody() {
         };
         fetchProductData();
 
-    }, [id]));
+    }, [id]);
 
+    const userID = localStorage.getItem("userID");
     const handleAddToCart = async () => {
         // localStorage.removeItem("productIDs")
         if (userID == null) {
@@ -117,7 +115,6 @@ export function ProductDetailPageBody() {
                     />
                 </div>
             </div>
-
             {/* Product Details */}
             <div className="flex-[6] px-4">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">{productData?.name}</h1>
@@ -129,7 +126,6 @@ export function ProductDetailPageBody() {
                             <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 inline-block text-sm uppercase font-bold rounded-full mb-2 shadow-lg">
                                 Flash Sale
                             </div>
-
                             {/* Price Details */}
                             <div className="flex items-center">
                                 <p className="!text-red-600 text-xl font-semibold mr-2">
