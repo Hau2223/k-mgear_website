@@ -15,6 +15,7 @@ export const createProduct = async (params) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
+        typeImage: params.typeImage,
     });
 }
 
@@ -30,7 +31,8 @@ export const updateProduct = async (params, id) => {
         rating: params.rating,
         sold: params.sold,
         imageUrl: params.imageUrl,
-        totalReviews : params.totalReviews
+        totalReviews : params.totalReviews,
+        typeImage: params.typeImage,
     });
 }
 

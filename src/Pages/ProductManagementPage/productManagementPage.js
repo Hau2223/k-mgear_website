@@ -19,30 +19,30 @@ import "rc-slider/assets/index.css";
 
 export function ProductManagement() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [productAll, setProductAll] = useState([]);
   const [isloading, setIsLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState({});
-  const [fileSelected, setFileSelected] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 100000]); // Giá mặc định
+  const [priceRange, setPriceRange] = useState([0, 100000]); 
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
+
+  const [selectedProduct, setSelectedProduct] = useState({});
+  const [fileSelected, setFileSelected] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  const [isModalOpenUpdate, setIsModalOpenUpdate] = useState(false);
+  const [activePopup, setActivePopup] = useState(null);
   const productTypes = ["Bàn phím", "Chuột", "Màn hình", "Tài Nghe", "Khác"];
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDropdownTypeOpen, setIsDropdownTypeOpen] = useState(false);
   const [isDropdownBrandOpen, setIsDropdownBrandOpen] = useState(false);
-
   const [filter, setFilter] = useState({
     type: "",
     brand: "",
     maxPrice: "",
   });
 
-  const [activePopup, setActivePopup] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState({
     name: "",
     type: "",
@@ -58,10 +58,6 @@ export function ProductManagement() {
   useEffect(() => {
     fetchAllProduct();
   }, [location.pathname]);
-
-  useEffect(() => {
-    applyFilter();
-  }, [filter, productAll]);
 
   const fetchAllProduct = async () => {
     try {
@@ -84,40 +80,37 @@ export function ProductManagement() {
     }
   };
 
+  useEffect(() => {
+    applyFilter();
+  }, [filter, productAll]);
+
   const applyFilter = () => {
     let result = productAll;
-
     if (filter.name) {
       result = result.filter((product) =>
         product.name.toLowerCase().includes(filter.name.toLowerCase())
       );
     }
-
     if (filter.type) {
       result = result.filter((product) =>
         product.type.toLowerCase().includes(filter.type.toLowerCase())
       );
     }
-
     if (filter.brand) {
       result = result.filter((product) =>
         product.brand.toLowerCase().includes(filter.brand.toLowerCase())
       );
     }
-
     result = result.filter(
       (product) =>
         product.price >= priceRange[0] && product.price <= priceRange[1]
     );
-
-    // Other filter conditions...
-
     setFilteredProducts(result);
   };
 
   const handleAddProduct = useCallback(
     async (e) => {
-      e.preventDefault(); // Prevent default form submission
+      e.preventDefault(); 
       if (
         !data.name ||
         !data.type ||
@@ -132,10 +125,8 @@ export function ProductManagement() {
         alert("Vui lòng chọn file ảnh trước khi gửi.");
         return;
       }
-
       try {
         const res = await createProduct(data);
-        // console.log("Add product successfully!!!", res);
         if (res?.status === 200) {
           setIsModalOpen(false);
           await fetchAllProduct();
@@ -164,20 +155,17 @@ export function ProductManagement() {
 
   const handleUpdateProduct = useCallback(
     async (e) => {
-      e.preventDefault(); // Prevent default form submission
+      e.preventDefault(); 
       if (!fileSelected) {
-        alert("Vui lòng chọn file ảnh trước khi gửi."); // Alert if no file is selected
+        alert("Vui lòng chọn file ảnh trước khi gửi."); 
         return;
       }
       try {
         const res = await updateProduct(selectedProduct, selectedProduct._id);
-        // console.log(selectedProduct, "id",selectedProduct._id);
-        // console.log("Update product successfully!!!", res);
         if (res?.status === 200) {
           setIsModalOpenUpdate(false);
           await fetchAllProduct();
           await setActivePopup(null);
-
           alert("Thông Báo:\nCập nhật sản phẩm thành công");
         }
       } catch (err) {
@@ -186,8 +174,6 @@ export function ProductManagement() {
           "Error Updated product: " + err.response?.data?.message || err.message
         );
       }
-
-      // Handle your update logic here
     },
     [selectedProduct, fileSelected]
   );
@@ -200,7 +186,7 @@ export function ProductManagement() {
         setIsModalOpenUpdate(false);
         await fetchAllProduct();
         await setActivePopup(null);
-        // console.log("Delete product successfully!!!");
+
         alert("Thông Báo:\nXóa sản phẩm thành công");
       }
     } catch (err) {
@@ -210,11 +196,6 @@ export function ProductManagement() {
       );
     }
   };
-
-  // const handleEdit = (productId) => {
-  //   console.log("Edit product:", productId._id, "name", productId.name);
-  // };
-  // console.log(selectedProduct);
 
   const togglePopup = (productId) => {
     setActivePopup(activePopup === productId ? null : productId);
@@ -235,7 +216,7 @@ export function ProductManagement() {
         setData((c) => ({ ...c, price: text }));
         break;
       case "description":
-        setData((c) => ({ ...c, description: text })); // Corrected spelling
+        setData((c) => ({ ...c, description: text })); 
         break;
       case "discount":
         setData((c) => ({ ...c, discount: text }));
@@ -272,7 +253,6 @@ export function ProductManagement() {
     const types = products.map((product) => product.type);
     return [...new Set(types)];
   };
-
   const getUniqueBrands = (products) => {
     const brands = products.map((product) => product.brand);
     return [...new Set(brands)];
@@ -284,7 +264,7 @@ export function ProductManagement() {
   const handleTypeFilterChange = (selectedType) => {
     setFilter((prevFilter) => ({
       ...prevFilter,
-      type: selectedType, // Set to empty string for "Tất cả"
+      type: selectedType, 
     }));
     setIsDropdownTypeOpen(false);
   };
@@ -293,7 +273,7 @@ export function ProductManagement() {
       ...prevFilter,
       brand: selectedBrand,
     }));
-    setIsDropdownBrandOpen(false); // Close the dropdown after selection
+    setIsDropdownBrandOpen(false); 
   };
 
   useEffect(() => {
@@ -310,37 +290,28 @@ export function ProductManagement() {
 
   const handleImageUpload = async (e, context) => {
     const file = e.target.files[0];
-    setFileSelected(!!file); // Set to true if a file is selected, false otherwise
-
+    setFileSelected(!!file); 
     if (file) {
       try {
         const reader = new FileReader();
         reader.onload = () => {
           const img = new Image();
           img.onload = () => {
-            const maxWidth = 200; // Max width
-            const maxHeight = 200; // Max height
+            const maxWidth = 200; 
+            const maxHeight = 200; 
             let width = img.width;
             let height = img.height;
-
-            // Calculate resize ratio
             if (width > maxWidth || height > maxHeight) {
               const ratio = Math.min(maxWidth / width, maxHeight / height);
               width = width * ratio;
               height = height * ratio;
             }
-
-            // Create canvas and draw image
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
             canvas.width = width;
             canvas.height = height;
             ctx.drawImage(img, 0, 0, width, height);
-
-            // Convert canvas to base64 URL
             const resizedBase64 = canvas.toDataURL(file.type);
-
-            // Depending on the context, set the appropriate state
             if (context === "add") {
               handleTextChange("imageUrl", resizedBase64.split(",")[1]);
               handleTextChange("typeImage", file.type);
@@ -349,10 +320,9 @@ export function ProductManagement() {
               handleTextChangeUpdate("typeImage", file.type);
             }
           };
-
           img.src = reader.result;
         };
-        reader.readAsDataURL(file); // Read file as base64
+        reader.readAsDataURL(file); 
       } catch (error) {
         console.error("Error uploading image:", error);
       }
@@ -381,8 +351,7 @@ export function ProductManagement() {
 
         <div className="relative ">
           <button
-            className=" flex items-center justify-center gap-1  p-2 border border-teal-500
-            rounded cursor-pointer min-w-32 hover:bg-gray-200 text-black font-medium"
+            className=" flex items-center justify-center gap-1  p-2 border border-teal-500 rounded cursor-pointer min-w-32 hover:bg-gray-200 text-black font-medium"
             onClick={() => {
               setIsDropdownTypeOpen(!isDropdownTypeOpen);
               setIsDropdownVisible(false);
@@ -396,12 +365,8 @@ export function ProductManagement() {
           {isDropdownTypeOpen && (
             <div className="absolute grid grid-cols-3 z-10 p-1 bg-white shadow-lg rounded w-[400px] border border-gray-300">
               <div
-                className={`flex items-center justify-center p-2 cursor-pointer min-w-32 ${
-                  filter.type === ""
-                    ? "border border-teal-400 rounded"
-                    : "hover:border hover:border-teal-400 hover:rounded"
-                }`}
-                onClick={() => handleTypeFilterChange("")} // Reset filter to show all products
+                className={`flex items-center justify-center p-2 cursor-pointer min-w-32 ${ filter.type === "" ? "border border-teal-400 rounded": "hover:border hover:border-teal-400 hover:rounded"}`}
+                onClick={() => handleTypeFilterChange("")} 
               >
                 Tất cả
               </div>
@@ -421,9 +386,11 @@ export function ProductManagement() {
             </div>
           )}
         </div>
+
         <div className="relative">
           <button
-            className="flex items-center justify-center gap-1 p-2 border border-teal-500 rounded cursor-pointer min-w-26 hover:bg-gray-200 text-black font-medium"
+            className="flex items-center justify-center gap-1 p-2 border border-teal-500 rounded cursor-pointer 
+            min-w-26 hover:bg-gray-200 text-black font-medium"
             onClick={() => {
               setIsDropdownBrandOpen(!isDropdownBrandOpen);
               setIsDropdownTypeOpen(false);
@@ -435,7 +402,8 @@ export function ProductManagement() {
             <FaCaretDown />
           </button>
           {isDropdownBrandOpen && (
-            <div className="absolute grid grid-cols-3 z-10 p-1 bg-white shadow-lg rounded w-[400px] border border-gray-300 gap-2">
+            <div className="absolute grid grid-cols-3 z-10 p-1 bg-white shadow-lg rounded w-[400px] border
+             border-gray-300 gap-2">
               <div
                 className={`flex items-center justify-center p-2 cursor-pointer min-w-26 ${
                   filter.brand === ""
@@ -471,7 +439,7 @@ export function ProductManagement() {
               setIsDropdownTypeOpen(false);
               setIsDropdownBrandOpen(false);
               setActivePopup(null);
-            }} // Hiện/ẩn dropdown
+            }} 
           >
             Giá
             <FaCaretDown className="" />
@@ -485,12 +453,12 @@ export function ProductManagement() {
                 max={maxPrice}
                 value={priceRange}
                 onChange={setPriceRange}
-                step={10000} // Bước nhảy
-                railStyle={{ backgroundColor: "border-gray-300" }} // Màu nền
+                step={10000} 
+                railStyle={{ backgroundColor: "border-gray-300" }} 
                 handleStyle={[
                   { borderColor: "green", backgroundColor: "green" },
                   { borderColor: "green", backgroundColor: "green" },
-                ]} // Màu nút
+                ]} 
               />
               <div className="flex justify-between">
                 <span>{priceRange[0].toLocaleString()} VNĐ</span>
@@ -499,8 +467,8 @@ export function ProductManagement() {
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
                 onClick={() => {
-                  applyFilter(); // Gọi hàm lọc
-                  setIsDropdownVisible(false); // Ẩn dropdown
+                  applyFilter(); 
+                  setIsDropdownVisible(false);
                 }}
               >
                 Xem kết quả
@@ -510,7 +478,8 @@ export function ProductManagement() {
         </div>
 
         <button
-          className="bg-green-500 text-white px-4 py-2 w-36 rounded shadow hover:shadow-lg absolute right-5"
+          className="bg-green-500 text-white px-4 py-2 w-36 rounded 
+          shadow hover:shadow-lg absolute right-5"
           onClick={() => setIsModalOpen(true)}
         >
           Thêm sản phẩm
@@ -525,7 +494,6 @@ export function ProductManagement() {
                 key={product._id}
                 className="relative border rounded-lg p-4 pt-10 shadow bg hover:shadow-lg"
               >
-                {/* Nút ba chấm */}
                 <button
                   onClick={() => togglePopup(product._id)}
                   className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 pointer-events-auto"
@@ -534,29 +502,25 @@ export function ProductManagement() {
                 </button>
                 {activePopup === product._id && (
                   <div className="absolute top-8 right-2 bg-white shadow-lg border rounded-md w-35 z-10">
-                    {/* Edit button */}
                     <button
                       onClick={() => {
                         setIsModalOpenUpdate(true);
                         setSelectedProduct(product);
                       }}
-                      className="block w-full px-4 py-2 text-left text-yellow-400 font-semibold  hover:bg-gray-200 flex items-center"
+                      className="w-full px-4 py-2 text-left text-yellow-400 font-semibold  hover:bg-gray-200 flex items-center"
                     >
                       <HiOutlinePencil className="mr-2 " />
                       Cập nhật
                     </button>
-
-                    {/* Delete button */}
                     <button
                       onClick={() => handleDeleteProduct(product._id)}
-                      className="block w-full px-4 py-2 text-left text-red-500 font-semibold hover:bg-gray-200 flex items-center"
+                      className="w-full px-4 py-2 text-left text-red-500 font-semibold hover:bg-gray-200 flex items-center"
                     >
                       <HiOutlineTrash className="mr-2" />
                       Xóa
                     </button>
                   </div>
                 )}
-
                 <img
                   src={product?.imageUrl || IMAGES.PART}
                   onError={(e) => (e.target.src = IMAGES.PART)}
@@ -599,7 +563,6 @@ export function ProductManagement() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-bold mb-4">Thêm sản phẩm mới</h2>
-            {/* Form thêm sản phẩm */}
             <form>
               <div className="mb-4">
                 <label className="block font-medium">Tên sản phẩm:</label>
@@ -626,7 +589,7 @@ export function ProductManagement() {
                       <div
                         key={index}
                         className="p-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleSingleSelect(type)} // Gọi hàm xử lý chọn một mục
+                        onClick={() => handleSingleSelect(type)}
                       >
                         {type}
                       </div>
@@ -675,7 +638,7 @@ export function ProductManagement() {
                   accept="image/*"
                   className="border p-2 w-full rounded"
                   required={true}
-                  onChange={(e) => handleImageUpload(e, "add")} // Handle image upload
+                  onChange={(e) => handleImageUpload(e, "add")} 
                 />
               </div>
 
@@ -702,8 +665,6 @@ export function ProductManagement() {
                   onChange={(e) => handleTextChange("price", e.target.value)}
                 />
               </div>
-
-              {/* Các nút hành động */}
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
@@ -711,7 +672,7 @@ export function ProductManagement() {
                   onClick={() => {
                     setIsModalOpen(false);
                     setActivePopup(null);
-                  }} // Đóng modal
+                  }} 
                 >
                   Hủy
                 </button>
@@ -767,7 +728,7 @@ export function ProductManagement() {
                       <div
                         key={index}
                         className="p-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleSingleSelect(type)} // Gọi hàm xử lý chọn một mục
+                        onClick={() => handleSingleSelect(type)} 
                       >
                         {type}
                       </div>
@@ -818,7 +779,7 @@ export function ProductManagement() {
                   type="file"
                   accept="image/*"
                   className="border p-2 w-full rounded"
-                  onChange={(e) => handleImageUpload(e, "update")} // Handle image upload
+                  onChange={(e) => handleImageUpload(e, "update")} 
                 />
               </div>
 
@@ -834,7 +795,6 @@ export function ProductManagement() {
                   }
                 />
               </div>
-
               <div className="mb-4">
                 <label className="block font-medium">Giá:</label>
                 <input
@@ -847,7 +807,6 @@ export function ProductManagement() {
                   }
                 />
               </div>
-              {/* Các nút hành động */}
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
@@ -855,7 +814,7 @@ export function ProductManagement() {
                   onClick={() => {
                     setIsModalOpenUpdate(false);
                     setActivePopup(null);
-                  }} // Đóng modal
+                  }} 
                 >
                   Hủy
                 </button>
