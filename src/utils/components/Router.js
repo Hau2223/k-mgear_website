@@ -20,8 +20,6 @@ export function NavigationHandler() {
       <div className="flex min-h-screen bg-gray-100">
         <Routes>
           <Route path="/admin" element={<ProductManagement />} />
-          {/* <Route path="/admin/users" element={<ManageUsers />} />
-                    <Route path="/admin/products" element={<ManageProducts />} /> */}
         </Routes>
       </div>
     );
